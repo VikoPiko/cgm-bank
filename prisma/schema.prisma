@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId      String     @id @default(uuid())
+  firstName   String     @default("")
+  middleName  String     @default("")
+  lastName    String     @default("")
+  email       String     @unique @default("")
+  address1    String     @default("")
+  phoneNumber String     @default("")
+  country     String     @default("")
+  city        String     @default("")
+  avatar      String     @default("/profile.jpg")
+  password    String     @default("")
+  ssn         String     @default("")
+  dateOfBirth String     @default("")
+  postalCode  String     @default("")
+  role        Role       @default(CLIENT)
+  banks       Banks[]
+  accounts    Accounts[]
+  loans       Loans[]
+  createdAt   DateTime   @default(now())
+}
+
+model Banks {
+  bankId     String  @id @default("")
+  User       User?   @relation(fields: [userUserId], references: [userId])
+  userUserId String?
+}
+
+model Accounts {
+  accountId     String  @id @default("")
+  accountNumber String?
+  routingNumber String?
+  iban          String?
+  switftBIC     String?
+  balance       Float
+
+  accountType AccountType @default(CHECKING)
+  User        User?       @relation(fields: [uUserId], references: [userId])
+  uUserId     String?
+}
+
+model Loans {
+  loanId       String  @id @default(uuid())
+  amount       Float
+  loanTerm     String
+  interestRate Float
+  User         User?   @relation(fields: [userUserId], references: [userId])
+  userUserId   String?
+}
+
+model Transactions {
+  transactionId String @id @default(uuid())
+}
+
+enum TransactionType {
+  WITHDRAW
+  DEPOSIT
+  PAYMENT
+  TRANSFER
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum AccountType {
+  CHECKING
+  SAVING
+  LOAN
+}
