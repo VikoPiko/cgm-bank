@@ -1,3 +1,4 @@
+"use client";
 import { ModeToggle } from "@/components/custom/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,17 +10,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { logout } from "@/lib/actions/actions";
-import { getUser } from "@/lib/utils";
+import { User } from "@prisma/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const Page = async () => {
-  const user = await getUser();
+const Page = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (typeof user === "string") {
-    return <h1>{user}</h1>; // Displays "Unable to Find user"
+  const fetchUser = async () => {
+    try {
+      const response = await fetch("/api/prisma/users/me");
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (!user) {
+    return <h1>Unable to find user</h1>;
   }
 
   return (
@@ -28,24 +52,26 @@ const Page = async () => {
       <Card>
         <CardHeader>
           <CardTitle>
-            Name: {user.firstName} {user.middleName} {user.lastName} | userId:{" "}
-            {user.userId}
+            Name: {user?.firstName} {user?.middleName} {user?.lastName} |
+            userId: {user?.userId}
           </CardTitle>
-          <CardDescription>{user.role}</CardDescription>
+          <CardDescription>{user?.role}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Image
-            src={user.avatar}
-            width={100}
-            height={100}
-            alt="User"
-            className="rounded-lg"
-          />
+          {user?.avatar && (
+            <Image
+              src={user.avatar}
+              width={100}
+              height={100}
+              alt="User"
+              className="rounded-lg"
+            />
+          )}
           <div className="mt-2">
-            <p>city: {user.city}</p>
-            <p>address: {user.address1}</p>
-            <p>date of birth: {user.dateOfBirth}</p>
-            <p>email: {user.email}</p>
+            <p>City: {user?.city}</p>
+            <p>Address: {user?.address1}</p>
+            <p>Date of birth: {user?.dateOfBirth}</p>
+            <p>Email: {user?.email}</p>
           </div>
         </CardContent>
         <CardFooter className="gap-4">

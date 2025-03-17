@@ -6,8 +6,10 @@ import { login } from "@/lib/actions/actions";
 import Link from "next/link";
 import SignUp from "@/app/(auth)/sign-up/page";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
+  const router = useRouter();
   const [showRegister, setShowRegister] = useState(false);
   const [formErrors, setFormErrors] = useState<any>({});
   //   const { t } = useTranslation();
@@ -111,7 +113,7 @@ const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
                 Go Back
               </Button>
               <Button
-                onClick={() => setShowRegister(true)}
+                onClick={() => router.push("/sign-up")}
                 className="hover:translate-y-[-4px] transition-all duration-300 bg-blue-500 hover:bg-blue-700"
               >
                 Not a user? Sign Up!

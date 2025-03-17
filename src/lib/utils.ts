@@ -14,7 +14,7 @@ export const authFormSchema = z.object({
   firstName: z.string().min(3),
   middleName: z.string().min(3),
   lastName: z.string().min(3),
-  phoneNumber: z.string().min(8).max(10),
+  phoneNumber: z.string().min(8).max(14),
   city: z.string().min(3).max(50),
   postalCode: z.string().min(3).max(6),
   dateOfBirth: z.string().min(3),

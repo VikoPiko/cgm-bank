@@ -71,7 +71,7 @@ export async function getUserByEmail(email: string) {
 // In a utils file (e.g., `lib/user.ts` or in the `RootLayout.tsx` itself)
 export async function getUser() {
   try {
-    const response = await fetch("http://localhost:3000/api/me");
+    const response = await fetch("http://localhost:3000/api/prisma/users/me");
     if (!response.ok) {
       throw new Error("Failed to fetch user data");
     }
