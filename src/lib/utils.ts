@@ -22,6 +22,8 @@ export const authFormSchema = z.object({
   country: z.string().min(2).max(30),
 });
 
+export type AuthFormType = z.infer<typeof authFormSchema>;
+
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
 export async function getUser() {

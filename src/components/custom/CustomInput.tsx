@@ -1,65 +1,51 @@
-import React, { useState } from "react";
-import { FormControl, FormField, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Eye, EyeOff } from "lucide-react"; // Icons for visibility toggle
-
-import { Control, FieldPath } from "react-hook-form";
-import { z } from "zod";
-import { authFormSchema } from "@/lib/utils";
-
-const formSchema = authFormSchema;
+import { Control, Controller, useFormContext } from "react-hook-form";
 
 interface CustomInputProps {
-  control: Control<z.infer<typeof formSchema>>;
-  name: FieldPath<z.infer<typeof formSchema>>;
+  control: Control<any>;
+  name: string;
   label: string;
-  placeholder: string;
-  type?: "text" | "password" | "date"; // Allows optional field type
+  placeholder?: string;
+  type?: string;
 }
 
-const CustomInput = ({
-  control,
+const CustomInput: React.FC<CustomInputProps> = ({
   name,
   label,
   placeholder,
   type = "text",
-}: CustomInputProps) => {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const isPasswordField = type === "password";
+}) => {
+  const {
+    control,
+    formState: { errors },
+    clearErrors,
+  } = useFormContext();
 
   return (
-    <FormField
-      control={control}
+    <Controller
       name={name}
+      control={control}
       render={({ field }) => (
-        <div className="form-item">
-          <FormLabel className="mb-2">{label}</FormLabel>
-          <div className="relative w-full">
-            <FormControl>
-              <Input
-                type={
-                  isPasswordField
-                    ? isPasswordVisible
-                      ? "text"
-                      : "password"
-                    : type
-                } // Dynamic type update
-                placeholder={placeholder}
-                className="input-class pr-10"
-                {...field}
-              />
-            </FormControl>
-            {isPasswordField && (
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                onClick={() => setIsPasswordVisible((prev) => !prev)}
-              >
-                {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            )}
-            <FormMessage className="form-message mt-2" />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-sm font-medium">{label}</label>
+          <input
+            {...field}
+            type={type}
+            placeholder={placeholder}
+            className={`border p-2 rounded-md ${
+              errors[name] ? "border-red-500" : "border-gray-300"
+            }`}
+            onChange={(e) => {
+              field.onChange(e);
+              clearErrors(name); // ✅ Clear error when user types
+            }}
+          />
+          {errors[name] && (
+            <span className="text-red-500 text-xs">
+              {typeof errors[name]?.message === "string"
+                ? errors[name]?.message
+                : "Invalid input"}
+            </span>
+          )}
         </div>
       )}
     />
