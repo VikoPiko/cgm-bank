@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useState } from "react";
@@ -42,7 +41,7 @@ const page = () => {
         <main className="flex-1 py-12">
           <div className="container mx-auto max-w-3xl px-4">
             <div className="mb-8 flex flex-col items-center text-center">
-              <Shield className="h-10 w-10 text-primary" />
+              <Image src={"/logo2.svg"} width={100} height={100} alt="none" />
               <h1 className="mt-3 text-2xl font-bold">Open Your Account</h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Complete the steps below to create your secure banking account
@@ -376,7 +375,7 @@ const page = () => {
           </div>
         </main>
         <footer className="border-t py-4">
-          <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="container mx-auto max-w-7xl flex flex-col items-center justify-center gap-4 md:flex-row">
             <div className="flex items-center gap-2">
               <Image src={"/logo2.svg"} width={34} height={34} alt="img" />
             </div>

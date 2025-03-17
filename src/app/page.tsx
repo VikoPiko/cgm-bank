@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/custom/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { logout } from "@/lib/actions/actions";
 import { getUser } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -22,6 +24,7 @@ const Page = async () => {
 
   return (
     <div className="m-5">
+      <ModeToggle />
       <Card>
         <CardHeader>
           <CardTitle>
@@ -50,10 +53,8 @@ const Page = async () => {
             <Link href={"/sign-in"}>Sign In</Link>
           </Button>
 
-          <Button variant="outline" size="icon" asChild>
-            <Link href={"/"}>
-              <ChevronRight />
-            </Link>
+          <Button variant="outline" onClick={logout}>
+            Logout
           </Button>
         </CardFooter>
       </Card>
