@@ -11,6 +11,7 @@ export default function Upload() {
           // Do something with the response
           console.log("Files: ", res);
           alert("Upload Completed");
+          window.location.reload();
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.

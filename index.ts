@@ -1,11 +1,18 @@
-import { Home, Banknote, History, Send, BellRing, Settings } from "lucide-react";
+import {
+  Home,
+  Banknote,
+  History,
+  Send,
+  BellRing,
+  Settings,
+} from "lucide-react";
 
 export const sidebarLinks = [
   {
     icon: Home,
-    route: "/",
+    route: "/dashboard",
     // Translateable key
-    label: "home", 
+    label: "home",
   },
   {
     icon: Banknote,

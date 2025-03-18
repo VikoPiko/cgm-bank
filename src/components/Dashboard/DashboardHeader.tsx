@@ -20,25 +20,25 @@ const DashboardHeader = ({ userId }: { userId: string }) => {
   const [linkToken, setLinkToken] = useState("");
 
   // Fetch link token on load
-  useEffect(() => {
-    const fetchLinkToken = async () => {
-      try {
-        const response = await fetch("/api/plaid/link-token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId }),
-        });
+  // useEffect(() => {
+  //   const fetchLinkToken = async () => {
+  //     try {
+  //       const response = await fetch("/api/plaid/link-token", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ userId }),
+  //       });
 
-        if (!response.ok) throw new Error("Failed to fetch link token");
-        const data = await response.json();
-        setLinkToken(data.link_token);
-      } catch (err) {
-        console.error("Error fetching link token:", err);
-      }
-    };
+  //       if (!response.ok) throw new Error("Failed to fetch link token");
+  //       const data = await response.json();
+  //       setLinkToken(data.link_token);
+  //     } catch (err) {
+  //       console.error("Error fetching link token:", err);
+  //     }
+  //   };
 
-    if (userId) fetchLinkToken();
-  }, [userId]);
+  //   if (userId) fetchLinkToken();
+  // }, [userId]);
 
   // const { open, ready } = usePlaidLink({
   //   token: linkToken,

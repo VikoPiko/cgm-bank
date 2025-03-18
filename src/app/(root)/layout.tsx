@@ -12,6 +12,7 @@ import prisma from "@/lib/prisma";
 import React from "react";
 import I18nProvider from "@/components/custom/I18nextProvider";
 import { Toaster } from "sonner";
+import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 
 // Function to fetch user data and decrypt session
 async function getUserDataFromSession() {
@@ -77,7 +78,7 @@ export default async function RootLayout({
                   <SidebarTrigger />
                   <div className="mb-3 p-3 -mt-2">
                     {/* Pass userId to DashboardHeader */}
-                    {/* <DashboardHeader userId={userId} /> */}
+                    <DashboardHeader userId={userId} />
                   </div>
                   {children}
                 </main>
