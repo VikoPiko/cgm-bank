@@ -22,7 +22,7 @@ model User {
   ssn            String     @default("")
   dateOfBirth    String     @default("")
   postalCode     String     @default("")
-  initialDeposit Float      @default(25.00)
+  initialDeposit String     @default("25.00")
   role           Role       @default(CLIENT)
   banks          Banks[]
   accounts       Accounts[]

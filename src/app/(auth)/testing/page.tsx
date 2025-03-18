@@ -6,14 +6,6 @@ import Link from "next/link";
 const RegisterPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="absolute top-4 left-4">
-        {" "}
-        <Button asChild>
-          <Link href={"/sign-up"}>
-            <ChevronLeft />
-          </Link>
-        </Button>
-      </div>
       <MultiStepForm />
     </div>
   );

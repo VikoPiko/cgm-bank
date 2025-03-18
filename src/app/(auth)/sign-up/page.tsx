@@ -4,74 +4,11 @@ import { Shield, CreditCard, BarChart3, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/custom/mode-toggle";
+import MainHeader from "@/components/custom/landing-header";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">SecureBank</span>
-          </div>
-          <nav className="hidden md:flex gap-6">
-            <div className="hover:translate-y-[-2px] transition-all duration-200 ease-in-out hover:underline hover:underline-offset-4">
-              <Link
-                href="#"
-                className="text-sm font-medium hover:text-primary "
-              >
-                Personal
-              </Link>
-            </div>
-
-            <div className="hover:translate-y-[-2px] transition-all duration-200 ease-in-out hover:underline hover:underline-offset-4">
-              <Link
-                href="#"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Business
-              </Link>
-            </div>
-
-            <div className="hover:translate-y-[-2px] transition-all duration-200 ease-in-out hover:underline hover:underline-offset-4">
-              <Link
-                href="#"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Features
-              </Link>
-            </div>
-
-            <div className="hover:translate-y-[-2px] transition-all duration-200 ease-in-out hover:underline hover:underline-offset-4">
-              <Link
-                href="#"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                About
-              </Link>
-            </div>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-muted-foreground hover:text-primary hover:cursor-pointer"
-            >
-              Log in
-            </Link>
-
-            <Link href="/testing">
-              <Button size="sm" className="hidden md:flex hover:cursor-pointer">
-                Open Account
-              </Button>
-            </Link>
-
-            <Button size="sm" variant="outline" className="md:hidden">
-              Menu
-            </Button>
-          </div>
-          <ModeToggle />
-        </div>
-      </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">

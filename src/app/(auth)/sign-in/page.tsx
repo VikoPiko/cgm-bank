@@ -26,7 +26,6 @@ import { createUser } from "@/lib/actions/user.actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import CustomInput from "@/components/custom/CustomInput";
-import { register } from "module";
 
 const formSchema = authFormSchema;
 
