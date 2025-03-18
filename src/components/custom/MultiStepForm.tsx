@@ -28,6 +28,7 @@ import {
 } from "../ui/card";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Checkbox } from "../ui/checkbox";
+import { useRouter } from "next/navigation";
 
 const fullSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -68,6 +69,8 @@ export default function MultiStepForm() {
   });
 
   const { handleSubmit, control, trigger, getValues } = form;
+
+  const router = useRouter();
 
   const nextStep = async () => {
     const currentStepSchema =
@@ -126,6 +129,7 @@ export default function MultiStepForm() {
 
       if (res.ok) {
         toast.success("User registered successfully!");
+        router.push("/login");
       } else {
         const errorMessage = await res.text();
         console.error("Submission error:", errorMessage);
@@ -139,7 +143,7 @@ export default function MultiStepForm() {
 
   return (
     <div
-      className={`min-w-[800px] mx-auto p-6 border rounded-lg ${
+      className={`flex min-h-screen md:w-full mt-5 flex-col mx-auto p-6 border rounded-lg ${
         step === 2 ? "mt-20" : ""
       }`}
     >
