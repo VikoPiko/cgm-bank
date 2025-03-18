@@ -12,10 +12,9 @@ import {
 import { logout } from "@/lib/actions/actions";
 import { User } from "@prisma/client";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-const Page = () => {
+const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -74,10 +73,6 @@ const Page = () => {
           </div>
         </CardContent>
         <CardFooter className="gap-4">
-          <Button asChild variant="outline">
-            <Link href={"/sign-in"}>Sign In</Link>
-          </Button>
-
           <Button variant="outline" onClick={logout}>
             Logout
           </Button>
@@ -87,4 +82,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Dashboard;

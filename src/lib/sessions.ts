@@ -43,6 +43,6 @@ export async function createSession(userId: string, role: string) {
     httpOnly: true,
     secure: true,
     expires: new Date(expiresAt),
-    sameSite: "strict",
+    sameSite: "lax",
   });
 }
