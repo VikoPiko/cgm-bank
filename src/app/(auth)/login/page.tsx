@@ -15,23 +15,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
-
-// Placeholder login function
-const login = async (data: any, formData: FormData) => {
-  console.log("Login function placeholder called");
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  const errors: Record<string, boolean> = {};
-  if (!email || !email.includes("@")) errors.email = true;
-  if (!password || password.length < 6) errors.password = true;
-
-  if (Object.keys(errors).length > 0) {
-    return { errors };
-  }
-
-  return { success: true };
-};
+import { login } from "@/lib/actions/actions";
 
 const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
   const router = useRouter();
@@ -46,9 +30,8 @@ const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
 
     if (result.errors) {
       setFormErrors(result.errors);
-    } else if (result.success && typeof window !== "undefined") {
-      window.location.reload();
     }
+    window.location.reload();
   };
 
   return (

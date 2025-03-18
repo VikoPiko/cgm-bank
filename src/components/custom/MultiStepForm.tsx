@@ -143,7 +143,7 @@ export default function MultiStepForm() {
 
   return (
     <div
-      className={`flex min-h-screen md:w-full mt-5 flex-col mx-auto p-6 border rounded-lg ${
+      className={`flex min-h-screen md:min-h-[75vh] md:w-[800px] mt-5 flex-col mx-auto p-6 border rounded-lg ${
         step === 2 ? "mt-20" : ""
       }`}
     >

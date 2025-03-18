@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
       where: { userId: String(session.userId) },
       select: {
         userId: true,
+        middleName: true,
         firstName: true,
         lastName: true,
         email: true,
@@ -29,6 +30,9 @@ export async function GET(req: NextRequest) {
         country: true,
         avatar: true,
         phoneNumber: true,
+        initialDeposit: true,
+        createdAt: true,
+        role: true,
       },
     });
 
