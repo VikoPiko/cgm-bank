@@ -7,7 +7,7 @@ import Image from "next/image";
 const MainHeader = () => {
   return (
     <header className="fixed top-0 left-0 w-full z-50 border-b bg-background/20 backdrop-blur-sm">
-      <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between">
+      <div className="container mx-auto px-4 md:px-6  flex h-16 items-center justify-between">
         {/* Left Section: Logo */}
         <div className="flex items-center gap-3">
           <Image src="/logo2.svg" width={65} height={40} alt="CGM" />

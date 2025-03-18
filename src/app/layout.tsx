@@ -44,7 +44,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="">
-            <header className="sticky top-0 text-white py-0 z-10">
+            <header className="sticky top-0 text-white py-0 z-10 mb-10 md:mb-0">
               <MainHeader />
             </header>
             <main className="">{children}</main>
