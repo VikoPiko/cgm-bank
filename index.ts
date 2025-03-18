@@ -19,16 +19,16 @@ export const sidebarLinks = [
     route: "/my-banks",
     label: "myBanks",
   },
-  {
-    icon: History,
-    route: "/transaction-history",
-    label: "transactionHistory",
-  },
-  {
-    icon: Send,
-    route: "/payment-transfer",
-    label: "transferFunds",
-  },
+  // {
+  //   icon: History,
+  //   route: "/transaction-history",
+  //   label: "transactionHistory",
+  // },
+  // {
+  //   icon: Send,
+  //   route: "/payment-transfer",
+  //   label: "transferFunds",
+  // },
   {
     icon: BellRing,
     route: "/notifications",

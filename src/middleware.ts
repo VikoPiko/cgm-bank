@@ -11,6 +11,10 @@ export default async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 
+  const url = new URL(req.url);
+  const res = NextResponse.next();
+  if (url.pathname.startsWith("/api/uploadthing")) return res;
+
   const cookie = (await cookies()).get("session")?.value;
   const session = await decrypt(cookie);
   console.log("session: ", session);
