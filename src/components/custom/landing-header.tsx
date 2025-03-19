@@ -11,21 +11,23 @@ const MainHeader = () => {
         {/* Left Section: Logo */}
         <div className="flex items-center gap-3">
           <Image src="/logo2.svg" width={65} height={40} alt="CGM" />
-          <span className="text-xl font-bold">CGM Bank</span>
+          <span className="text-xl font-bold text-black dark:text-white">
+            CGM Bank
+          </span>
         </div>
 
         {/* Center Section: Navigation Menu */}
         <nav className="hidden md:flex gap-8 flex-grow justify-center">
           {[
-            { href: "#", label: "Personal" },
-            { href: "#", label: "Business" },
-            { href: "#", label: "Features" },
-            { href: "#", label: "About" },
+            { href: "/personal", label: "Personal" },
+            { href: "/business", label: "Business" },
+            { href: "/features", label: "Features" },
+            { href: "/about", label: "About" },
           ].map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium transition-all duration-200 ease-in-out hover:text-primary hover:translate-y-[-3px]"
+              className="text-sm text-black dark:text-white font-medium transition-all duration-200 ease-in-out hover:text-primary hover:translate-y-[-3px]"
             >
               {item.label}
             </Link>
@@ -58,7 +60,7 @@ const MainHeader = () => {
 
           {/* Dark Mode Toggle */}
           <ModeToggle />
-          <p className="text-sm ml-[-10px] select-none hidden lg:block">
+          <p className="text-sm ml-[-10px] select-none hidden lg:block text-black dark:text-white">
             {" "}
             Theme
           </p>

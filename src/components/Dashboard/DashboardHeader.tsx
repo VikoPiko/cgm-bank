@@ -83,7 +83,7 @@ const DashboardHeader = ({ userId }: { userId: string }) => {
 
       {/* Centered Logo */}
       <div className="flex-1 flex justify-center hover:scale-105 hover:-translate-y-[2px] transition-all duration-200 ease-in-out max-w-20">
-        <Link href="/">
+        <Link href="/dashboard">
           <Image src="/logo2.svg" width={75} height={40} alt="logo" priority />
         </Link>
       </div>
