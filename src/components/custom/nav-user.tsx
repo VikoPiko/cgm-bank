@@ -76,7 +76,7 @@ export function NavUser({ user }: { user: MinimalUser }) {
                   src={user?.avatar || "/default-avatar.jpg"} // Provide default image URL
                   alt={user?.firstName}
                 />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">CGM</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user?.firstName}</span>
