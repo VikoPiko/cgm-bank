@@ -3,7 +3,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="w-full">
+    <div className="min-h-screen">
       <Dashboard />
     </div>
   );

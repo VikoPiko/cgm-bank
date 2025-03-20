@@ -1,12 +1,11 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { ModeToggle } from "../custom/mode-toggle";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/i18n";
 import { Button } from "../ui/button";
-// import { usePlaidLink } from "react-plaid-link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,51 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const DashboardHeader = ({ userId }: { userId: string }) => {
+function DashboardHeader({ userId = "" }: { userId?: string }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { t } = useTranslation();
-  const [linkToken, setLinkToken] = useState("");
-
-  // Fetch link token on load
-  // useEffect(() => {
-  //   const fetchLinkToken = async () => {
-  //     try {
-  //       const response = await fetch("/api/plaid/link-token", {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ userId }),
-  //       });
-
-  //       if (!response.ok) throw new Error("Failed to fetch link token");
-  //       const data = await response.json();
-  //       setLinkToken(data.link_token);
-  //     } catch (err) {
-  //       console.error("Error fetching link token:", err);
-  //     }
-  //   };
-
-  //   if (userId) fetchLinkToken();
-  // }, [userId]);
-
-  // const { open, ready } = usePlaidLink({
-  //   token: linkToken,
-  //   onSuccess: (public_token, metadata) => {
-  //     console.log("Public Token:", public_token);
-  //     console.log("Account Metadata:", metadata);
-
-  //     fetch("/api/plaid/exchange-token", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ public_token, userId }),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => console.log("Bank added:", data))
-  //       .catch((err) => console.error("Error exchanging token:", err));
-  //   },
-  //   onExit: (err, metadata) => {
-  //     if (err) console.error("Plaid Link Error:", err);
-  //   },
-  // });
 
   // Language options
   const languages = [
@@ -68,16 +25,14 @@ const DashboardHeader = ({ userId }: { userId: string }) => {
   ];
 
   return (
-    <div className="col-span-12 p-4 rounded border border-stone-300 flex shadow-md items-center justify-between dark:bg-[#242424] dark:shadow-stone-700 dark:shadow-lg">
+    <div className="col-span-12 p-3 sm:p-4 rounded border border-stone-300 flex flex-col sm:flex-row shadow-md items-center justify-between gap-3 sm:gap-0 dark:bg-[#242424] dark:shadow-stone-700 dark:shadow-lg mb-2 sm:mb-3">
       {/* Left Side */}
-      <div className="relative">
+      <div className="relative w-full sm:w-auto">
         <Button
-          // onClick={() => ready && open()}
-          // disabled={!ready}
           className="bg-gray-50 text-black hover:bg-blue-600/20 hover:-translate-y-[2px] transition-all ease-in-out duration-150 shadow-md
-  dark:text-white dark:bg-[#242424] dark:hover:bg-blue-400/40 border border-gray-300 dark:border-gray-400 outline-none min-w-[123px]"
+  dark:text-white dark:bg-[#242424] dark:hover:bg-blue-400/40 border border-gray-300 dark:border-gray-400 outline-none min-w-[123px] w-full sm:w-auto"
         >
-          {t("addBankButton")}
+          {t("addBankButton") || "Add Bank"}
         </Button>
       </div>
 
@@ -89,21 +44,21 @@ const DashboardHeader = ({ userId }: { userId: string }) => {
       </div>
 
       {/* Right Side */}
-      <div className="flex items-center space-x-4 relative">
+      <div className="flex items-center space-x-2 sm:space-x-4 relative w-full sm:w-auto justify-between sm:justify-end">
         {/* Language Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center text-black dark:text-white font-medium px-4 py-2 w-32 rounded-lg transition bg-stone-100 hover:bg-blue-600/20
-            hover:-translate-y-[2px] ease-in-out duration-150 dark:bg-[#242424] dark:hover:bg-blue-400/40 border dark:border-stone-400"
+              className="flex items-center text-black dark:text-white font-medium px-2 sm:px-4 py-2 w-24 sm:w-32 rounded-lg transition bg-stone-100 hover:bg-blue-600/20
+  hover:-translate-y-[2px] ease-in-out duration-150 dark:bg-[#242424] dark:hover:bg-blue-400/40 border dark:border-stone-400"
             >
-              <span className="flex items-center justify-center w-full min-w-[70px] text-center">
-                {t("language")}
+              <span className="flex items-center justify-center w-full min-w-[50px] sm:min-w-[70px] text-center text-xs sm:text-sm">
+                {t("language") || "Language"}
               </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="ml-2 h-5 w-5"
+                className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -135,6 +90,47 @@ const DashboardHeader = ({ userId }: { userId: string }) => {
       </div>
     </div>
   );
-};
+}
 
 export default DashboardHeader;
+
+// Fetch link token on load
+// useEffect(() => {
+//   const fetchLinkToken = async () => {
+//     try {
+//       const response = await fetch("/api/plaid/link-token", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ userId }),
+//       });
+
+//       if (!response.ok) throw new Error("Failed to fetch link token");
+//       const data = await response.json();
+//       setLinkToken(data.link_token);
+//     } catch (err) {
+//       console.error("Error fetching link token:", err);
+//     }
+//   };
+
+//   if (userId) fetchLinkToken();
+// }, [userId]);
+
+// const { open, ready } = usePlaidLink({
+//   token: linkToken,
+//   onSuccess: (public_token, metadata) => {
+//     console.log("Public Token:", public_token);
+//     console.log("Account Metadata:", metadata);
+
+//     fetch("/api/plaid/exchange-token", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ public_token, userId }),
+//     })
+//       .then((res) => res.json())
+//       .then((data) => console.log("Bank added:", data))
+//       .catch((err) => console.error("Error exchanging token:", err));
+//   },
+//   onExit: (err, metadata) => {
+//     if (err) console.error("Plaid Link Error:", err);
+//   },
+// });
