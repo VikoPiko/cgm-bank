@@ -131,10 +131,12 @@ export function NavUser({ user }: { user: MinimalUser }) {
                 <CreditCard className="text-blue-600 dark:text-blue-400" />
                 {t("billing")}
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell className="text-blue-600 dark:text-blue-400" />
-                {t("notifications")}
-              </DropdownMenuItem>
+              <Link href={"/notifications"}>
+                <DropdownMenuItem>
+                  <Bell className="text-blue-600 dark:text-blue-400" />
+                  {t("notifications")}
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

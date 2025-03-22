@@ -8,45 +8,54 @@ datasource db {
 }
 
 model User {
-  userId         String     @id @default(uuid())
-  firstName      String     @default("")
-  middleName     String     @default("")
-  lastName       String     @default("")
-  email          String     @unique @default("")
-  address1       String     @default("")
-  phoneNumber    String     @default("")
-  country        String     @default("")
-  city           String     @default("")
-  avatar         String     @default("/profile.jpg")
-  password       String     @default("")
-  ssn            String     @default("")
-  dateOfBirth    String     @default("")
-  postalCode     String     @default("")
-  initialDeposit String     @default("25.00")
-  role           Role       @default(CLIENT)
+  userId         String         @id @default(uuid())
+  firstName      String         @default("")
+  middleName     String         @default("")
+  lastName       String         @default("")
+  email          String         @unique @default("")
+  address1       String         @default("")
+  phoneNumber    String         @default("")
+  country        String         @default("")
+  city           String         @default("")
+  avatar         String         @default("/profile.jpg")
+  password       String         @default("")
+  ssn            String         @default("")
+  dateOfBirth    String         @default("")
+  postalCode     String         @default("")
+  initialDeposit String         @default("25.00")
+  role           Role           @default(CLIENT)
   banks          Banks[]
   accounts       Accounts[]
   loans          Loans[]
-  createdAt      DateTime   @default(now())
+  createdAt      DateTime       @default(now())
+  Transactions   Transactions[]
 }
 
 model Banks {
-  bankId     String  @id @default("")
-  User       User?   @relation(fields: [userUserId], references: [userId])
-  userUserId String?
+  id               String @id @default(uuid())
+  accountId        String @unique
+  bankId           String
+  accessToken      String
+  fundingSourceUrl String
+  shareableId      String
+  userId           String
+  user             User   @relation(fields: [userId], references: [userId])
 }
 
 model Accounts {
-  accountId     String  @id @default("")
-  accountNumber String?
-  routingNumber String?
-  iban          String?
-  switftBIC     String?
-  balance       Float
-
-  accountType AccountType @default(CHECKING)
-  User        User?       @relation(fields: [uUserId], references: [userId])
-  uUserId     String?
+  id               String      @id @default(uuid())
+  accountNumber    String?
+  routingNumber    String?
+  iban             String?
+  switftBIC        String?
+  availableBalance Float
+  currentBalance   Float
+  mask             String
+  name             String
+  officialName     String
+  accountType      AccountType @default(CHECKING)
+  user             User?       @relation(fields: [userId], references: [userId])
+  userId           String?
 }
 
 model Loans {
@@ -54,12 +63,28 @@ model Loans {
   amount       Float
   loanTerm     String
   interestRate Float
-  User         User?   @relation(fields: [userUserId], references: [userId])
-  userUserId   String?
+  loanPayments Float
+  user         User?   @relation(fields: [userId], references: [userId])
+  userId       String?
 }
 
 model Transactions {
-  transactionId String @id @default(uuid())
+  transactionId  String   @id @default(uuid())
+  userId         String
+  name           String
+  paymentChannel String
+  type           String
+  accountId      String
+  amount         Float
+  pending        Boolean
+  category       String
+  date           DateTime @default(now())
+  image          String
+  createdAt      DateTime @default(now())
+  channel        String
+  senderBankId   String
+  receiverBankId String
+  user           User     @relation(fields: [userId], references: [userId])
 }
 
 enum TransactionType {

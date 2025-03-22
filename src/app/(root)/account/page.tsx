@@ -116,7 +116,7 @@ const Page = () => {
   return (
     <div className="container mx-auto max-w-3xl py-10 px-4">
       <Card className="overflow-hidden">
-        <div className="bg-gradient-to-r from-primary/10 to-primary/5 h-32 relative">
+        <div className="bg-gradient-to-r from-blue-200/30 to-blue-300/25 h-32 relative">
           <div className="absolute -bottom-16 left-6">
             {user?.avatar ? (
               <Image
@@ -134,9 +134,6 @@ const Page = () => {
                 </span>
               </div>
             )}
-          </div>
-          <div className="absolute top-4 right-4">
-            <ModeToggle />
           </div>
         </div>
 

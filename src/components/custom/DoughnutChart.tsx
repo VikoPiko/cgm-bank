@@ -7,9 +7,10 @@ import { Doughnut } from "react-chartjs-2";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const DoughnutChart = () => {
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   // Set legend text color based on the theme - TODO - make customizable later
-  const legendTextColor = theme === "dark" ? "#cccccc" : "#121212";
+  const legendTextColor =
+    theme === "dark" || resolvedTheme === "dark" ? "#ccc" : "#121212";
 
   const data = {
     datasets: [
