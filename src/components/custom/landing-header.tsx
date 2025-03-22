@@ -54,7 +54,7 @@ const MainHeader = () => {
             Log in
           </Link>
 
-          <Link href="/testing" className="hidden md:block">
+          <Link href="/open-account" className="hidden md:block">
             <Button
               size="sm"
               variant="default"
@@ -86,7 +86,7 @@ const MainHeader = () => {
               ))}
               <DropdownMenuItem asChild className="md:hidden mt-2">
                 <Link
-                  href="/testing"
+                  href="/open-account"
                   className="w-full cursor-pointer font-medium"
                 >
                   Open Account

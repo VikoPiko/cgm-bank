@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/custom/app-sidebar";
-// import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import {
   SidebarInset,
@@ -15,18 +14,17 @@ import { Toaster } from "sonner";
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import MainFooter from "@/components/custom/main-app-footer";
 
-// Function to fetch user data and decrypt session
 async function getUserDataFromSession() {
   const cookieStore = cookies();
   const cookie = (await cookieStore).get("session")?.value;
 
   if (!cookie) {
-    return null; // User is not authenticated
+    return null;
   }
 
   const session = await decrypt(cookie);
   if (!session?.userId) {
-    return null; // Invalid session
+    return null;
   }
 
   const user = await prisma.user.findUnique({
@@ -68,7 +66,7 @@ export default async function RootLayout({
         <I18nProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
@@ -78,7 +76,6 @@ export default async function RootLayout({
                 <main>
                   <SidebarTrigger />
                   <div className="mb-3 p-3 -mt-2">
-                    {/* Pass userId to DashboardHeader */}
                     <DashboardHeader userId={userId} />
                   </div>
                   {children}

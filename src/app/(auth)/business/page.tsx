@@ -53,7 +53,7 @@ export default function BusinessPage() {
               </div>
               <div className="relative h-[300px] md:h-[400px] lg:h-[500px] rounded-xl overflow-hidden">
                 <Image
-                  src="/placeholder.svg?height=500&width=800"
+                  src="/small-business.jpeg"
                   alt="Business Banking"
                   fill
                   className="object-cover"

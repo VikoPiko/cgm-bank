@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { useTranslation } from "react-i18next";
 import { login } from "@/lib/actions/actions";
 import Link from "next/link";
-import SignUp from "@/app/(auth)/sign-up/page";
+import SignUp from "@/app/page";
 import { motion, AnimatePresence } from "framer-motion";
 
 const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {

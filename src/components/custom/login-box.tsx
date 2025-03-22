@@ -3,7 +3,7 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import SignUp from "@/app/(auth)/sign-up/page";
+import SignUp from "@/app/page";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -158,7 +158,7 @@ const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
                   <Button
                     variant="link"
                     className="p-0 h-auto font-medium dark:text-blue-400"
-                    onClick={() => router.push("/sign-up")}
+                    onClick={() => router.push("/")}
                   >
                     Sign up
                   </Button>

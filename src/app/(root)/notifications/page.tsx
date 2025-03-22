@@ -29,8 +29,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import MainFooter from "@/components/custom/main-app-footer";
 
 export default function NotificationsPage() {
   // Sample notification data

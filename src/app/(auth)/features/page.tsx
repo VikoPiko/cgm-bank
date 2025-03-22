@@ -57,7 +57,7 @@ export default function FeaturesPage() {
               </div>
               <div className="relative h-[300px] md:h-[400px] lg:h-[500px] rounded-xl overflow-hidden">
                 <Image
-                  src="/placeholder.svg?height=500&width=800"
+                  src="/features.jpg"
                   alt="Banking Features"
                   fill
                   className="object-cover"

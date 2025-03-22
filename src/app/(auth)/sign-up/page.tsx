@@ -24,7 +24,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link href="/testing">
+                  <Link href="/open-account">
                     <Button size="lg" className="h-12">
                       Get Started <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
