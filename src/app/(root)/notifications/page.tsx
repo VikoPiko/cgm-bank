@@ -368,7 +368,6 @@ export default function NotificationsPage() {
           </div>
         </div>
       </main>
-      <MainFooter />
     </div>
   );
 }

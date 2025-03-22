@@ -34,9 +34,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="p-4 pb-6 font-medium text- items-center justify-center text-stone-800 dark:text-white text-lg">
-            CGM Bank
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="p-4 pb-6 font-medium text- items-center justify-center text-stone-800 dark:text-white text-lg"></SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {sidebarLinks.map((item) => {

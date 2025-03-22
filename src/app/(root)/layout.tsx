@@ -13,6 +13,7 @@ import React from "react";
 import I18nProvider from "@/components/custom/I18nextProvider";
 import { Toaster } from "sonner";
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
+import MainFooter from "@/components/custom/main-app-footer";
 
 // Function to fetch user data and decrypt session
 async function getUserDataFromSession() {
@@ -82,6 +83,7 @@ export default async function RootLayout({
                   </div>
                   {children}
                 </main>
+                <MainFooter />
               </SidebarInset>
             </SidebarProvider>
           </ThemeProvider>

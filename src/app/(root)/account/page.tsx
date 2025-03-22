@@ -21,6 +21,7 @@ import Link from "next/link";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const Page = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -62,8 +63,10 @@ const Page = () => {
         const updatedUser = await response.json();
         setUser(updatedUser);
         setEditMode(false);
+        toast.success("Profile updated successfully.");
       } else {
         console.error("Failed to update profile.");
+        toast.success("Failed to update profile.");
       }
     } catch (error) {
       console.error("Error updating user:", error);

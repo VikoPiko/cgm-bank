@@ -67,7 +67,11 @@ const MainHeader = () => {
           {/* Mobile Menu Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="md:hidden">
-              <Button size="sm" variant="outline">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-black dark:text-white"
+              >
                 <Menu className="h-4 w-4 mr-1" />
                 Menu
               </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { UploadButton } from "@/lib/uploadthing";
+import { toast } from "sonner";
 
 export default function Upload() {
   return (
@@ -12,11 +13,13 @@ export default function Upload() {
           // Do something with the response
           console.log("Files: ", res);
           alert("Upload Completed");
+          toast.success("Image uploaded successfully.");
           window.location.reload();
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
           alert(`ERROR! ${error.message}`);
+          toast.error("An error occured while uploading.");
         }}
       />
     </main>
