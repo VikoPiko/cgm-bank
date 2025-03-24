@@ -5,6 +5,7 @@ import {
   Send,
   BellRing,
   Settings,
+  MonitorCog,
 } from "lucide-react";
 
 export const sidebarLinks = [
@@ -38,5 +39,10 @@ export const sidebarLinks = [
     icon: Settings,
     route: "/settings",
     label: "settingsRoute",
+  },
+  {
+    icon: MonitorCog,
+    route: "/testing",
+    label: "testingRoute",
   },
 ];

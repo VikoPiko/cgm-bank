@@ -95,3 +95,39 @@ export async function deleteUser(userId: string) {
     throw error;
   }
 }
+
+export async function generateAccountNumber() {
+  const accountRandomNumber = Math.floor(
+    1000000000 + Math.random() * 9000000000
+  );
+
+  const existingAccount = await prisma.accounts.findUnique({
+    where: { accountNumber: accountRandomNumber.toString() },
+  });
+
+  if (existingAccount) {
+    return generateAccountNumber();
+  }
+
+  return accountRandomNumber.toString();
+}
+
+export async function generateRoutingNumber() {
+  const routingNumber = Math.floor(
+    10000000 + Math.random() * 90000000
+  ).toString();
+  const checksum = calculateChecksum(routingNumber);
+  return routingNumber + checksum;
+}
+
+function calculateChecksum(routingNumber: string) {
+  // Checksum is calculated using a specific ABA formula:
+  // (3 * (1st, 4th, 7th digits) + 7 * (2nd, 5th, 8th digits) + (3rd, 6th) digits) % 10 = 0
+  const digits = routingNumber.split("").map(Number);
+  const checksumValue =
+    (3 * (digits[0] + digits[3] + digits[6]) +
+      7 * (digits[1] + digits[4] + digits[7]) +
+      (digits[2] + digits[5])) %
+    10;
+  return (10 - checksumValue) % 10; // Adjust to make it modulo 10 = 0
+}

@@ -8,27 +8,33 @@ datasource db {
 }
 
 model User {
-  userId         String         @id @default(uuid())
-  firstName      String         @default("")
-  middleName     String         @default("")
-  lastName       String         @default("")
-  email          String         @unique @default("")
-  address1       String         @default("")
-  phoneNumber    String         @default("")
-  country        String         @default("")
-  city           String         @default("")
-  avatar         String         @default("/profile.jpg")
-  password       String         @default("")
-  ssn            String         @default("")
-  dateOfBirth    String         @default("")
-  postalCode     String         @default("")
-  initialDeposit String         @default("25.00")
-  role           Role           @default(CLIENT)
+  userId         String          @id @default(uuid())
+  firstName      String          @default("")
+  middleName     String          @default("")
+  lastName       String          @default("")
+  email          String          @unique @default("")
+  address1       String          @default("")
+  phoneNumber    String          @default("")
+  country        String          @default("")
+  city           String          @default("")
+  avatar         String          @default("/profile.jpg")
+  password       String          @default("")
+  ssn            String          @default("")
+  dateOfBirth    String          @default("")
+  postalCode     String          @default("")
+  initialDeposit String          @default("25.00")
+  role           Role            @default(CLIENT)
   banks          Banks[]
   accounts       Accounts[]
   loans          Loans[]
-  createdAt      DateTime       @default(now())
+  notifications  Notifications[]
   Transactions   Transactions[]
+  createdAt      DateTime        @default(now())
+}
+
+enum Role {
+  CLIENT
+  ADMIN
 }
 
 model Banks {
@@ -44,47 +50,63 @@ model Banks {
 
 model Accounts {
   id               String      @id @default(uuid())
-  accountNumber    String?
+  accountNumber    String?     @unique
   routingNumber    String?
   iban             String?
   switftBIC        String?
-  availableBalance Float
-  currentBalance   Float
+  availableBalance Float       @default(0.0)
+  currentBalance   Float       @default(0.0)
   mask             String
   name             String
   officialName     String
   accountType      AccountType @default(CHECKING)
-  user             User?       @relation(fields: [userId], references: [userId])
-  userId           String?
+  userId           String
+  plaidAccountId   String?
+  user             User        @relation(fields: [userId], references: [userId])
+}
+
+enum AccountType {
+  CHECKING
+  SAVING
+  LOAN
 }
 
 model Loans {
-  loanId       String  @id @default(uuid())
-  amount       Float
-  loanTerm     String
-  interestRate Float
-  loanPayments Float
-  user         User?   @relation(fields: [userId], references: [userId])
-  userId       String?
+  loanId         String     @id @default(uuid())
+  amount         Float
+  loanTerm       Int
+  interestRate   Float
+  loanPayments   Float
+  status         LoanStatus @default(ACTIVE)
+  nextPaymentDue DateTime
+  userId         String
+  user           User?      @relation(fields: [userId], references: [userId])
+}
+
+enum LoanStatus {
+  ACTIVE
+  COMPLETED
+  DEFAULTED
 }
 
 model Transactions {
-  transactionId  String   @id @default(uuid())
-  userId         String
-  name           String
-  paymentChannel String
-  type           String
-  accountId      String
-  amount         Float
-  pending        Boolean
-  category       String
-  date           DateTime @default(now())
-  image          String
-  createdAt      DateTime @default(now())
-  channel        String
-  senderBankId   String
-  receiverBankId String
-  user           User     @relation(fields: [userId], references: [userId])
+  transactionId      String          @id @default(uuid())
+  userId             String
+  name               String
+  paymentChannel     String
+  transactionType    TransactionType
+  accountId          String
+  amount             Float
+  pending            Boolean         @default(false)
+  category           String
+  date               DateTime        @default(now())
+  image              String?
+  createdAt          DateTime        @default(now())
+  channel            String
+  senderBankId       String?
+  receiverBankId     String?
+  plaidTransactionId String?
+  user               User            @relation(fields: [userId], references: [userId])
 }
 
 enum TransactionType {
@@ -94,13 +116,11 @@ enum TransactionType {
   TRANSFER
 }
 
-enum Role {
-  CLIENT
-  ADMIN
-}
-
-enum AccountType {
-  CHECKING
-  SAVING
-  LOAN
+model Notifications {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [userId])
 }

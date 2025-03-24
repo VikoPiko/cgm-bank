@@ -26,16 +26,18 @@ export type AuthFormType = z.infer<typeof authFormSchema>;
 
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
-export async function getUser() {
-  const user = await prisma.user.findFirst({
-    where: {
-      userId: "d077ee10-bbab-4be4-995e-b8fa7fef0bef",
-    },
-  });
+export interface PlaidBalance {
+  available: number;
+  current: number;
+  iso_currency_code: string;
+}
 
-  if (user == null) {
-    return "Unable to Find user";
-  }
+export interface PlaidAccount {
+  account_id: string;
+  name: string;
+  balances: PlaidBalance;
+}
 
-  return user;
+export interface PlaidData {
+  accounts: PlaidAccount[];
 }

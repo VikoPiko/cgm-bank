@@ -8,6 +8,7 @@ const protectedRoutes = [
   "/dashboard",
   "/settings",
   "/my-banks",
+  "/testing",
 ];
 const publicRoutes = ["/login", "/sign-in", "/", "/personal"];
 

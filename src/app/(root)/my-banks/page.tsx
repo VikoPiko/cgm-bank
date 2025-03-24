@@ -38,6 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 // Define types for our data structure
 interface BankAccount {
@@ -173,7 +174,7 @@ export default function MyBanks() {
 
   const refreshBankConnection = (bankId: string) => {
     // In a real app, this would trigger a reconnection flow
-    console.log(`Refreshing connection for bank: ${bankId}`);
+    toast.info(`Refreshing connection for bank: ${bankId}`);
     // Simulate success
     setBanks(
       banks.map((bank) =>
@@ -403,18 +404,6 @@ export default function MyBanks() {
           )}
         </div>
       </main>
-
-      <footer className="w-full border-t bg-background py-6">
-        <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">SecureBank</span>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            © 2023 SecureBank. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

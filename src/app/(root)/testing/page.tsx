@@ -1,55 +1,31 @@
 "use client";
-import { PlaidData } from "@/lib/utils";
+import { useState, useEffect } from "react";
 import { Accounts, Banks } from "@prisma/client";
-import { useEffect, useState } from "react";
-import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
-import { useUser } from "../custom/UserContext";
+import { useUser } from "@/components/custom/UserContext";
+import { toast } from "sonner";
 
-const Card = ({
-  title,
-  value,
-  pillText,
-  trend,
-  period,
-}: {
-  title: string;
-  value: string;
-  pillText: string;
-  trend: "up" | "down";
-  period: string;
-}) => {
-  return (
-    <div className="col-span-12 md:col-span-4 p-4 rounded border border-stone-300 dark:bg-[#242424] dark:text-white">
-      <div className="flex mb-8 items-start justify-between">
-        <div>
-          <h3 className="text-stone-500 mb-2 text-xs sm:text-sm dark:text-white">
-            {title}
-          </h3>
-          <p className="text-2xl sm:text-3xl font-semibold">${value}</p>
-        </div>
+interface PlaidBalance {
+  available: number;
+  current: number;
+  iso_currency_code: string;
+}
 
-        <span
-          className={`text-xs flex items-center gap-1 font-medium px-2 py-1 rounded ${
-            trend === "up"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {trend === "up" ? <FiTrendingUp /> : <FiTrendingDown />} {pillText}
-        </span>
-      </div>
+interface PlaidAccount {
+  account_id: string;
+  name: string;
+  balances: PlaidBalance;
+}
 
-      <p className="text-xs text-stone-500 dark:text-stone-300">{period}</p>
-    </div>
-  );
-};
+interface PlaidData {
+  accounts: PlaidAccount[];
+}
 
-function StatCards() {
+const Testing = () => {
   const [account, setAccount] = useState<Accounts[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [banks, setBanks] = useState<Banks[] | null>(null);
   const [plaidBanks, setPlaidBanks] = useState<PlaidData | null>(null);
-  const user = useUser();
+  const user = useUser(); // This will get the current user
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,7 +86,7 @@ function StatCards() {
 
     fetchData();
     fetchBanks();
-  }, [user]);
+  }, [user]); // This will trigger the effect when `user` changes
 
   if (loading) {
     return (
@@ -142,40 +118,38 @@ function StatCards() {
       0 // Initial value for total
     ) || 0;
 
-  // const plaidCurrent =
-  //   plaidBanks?.accounts?.reduce(
-  //     (total, plaidAccount) => total + plaidAccount.balances.current,
-  //     0 // Initial value for total
-  //   ) || 0;
+  const plaidCurrent =
+    plaidBanks?.accounts?.reduce(
+      (total, plaidAccount) => total + plaidAccount.balances.current,
+      0 // Initial value for total
+    ) || 0;
 
   // You can also add current balances similarly
-  const totalBalance = localBalance + plaidBalance;
+  const totalBalance = localBalance + plaidCurrent;
 
   return (
-    <>
-      <Card
-        title="Available Balance"
-        value={account[0].availableBalance.toString()}
-        pillText="2.75%"
-        trend="up"
-        period="Last 30 days"
-      />
-      <Card
-        title="Last Transaction"
-        value="27.97"
-        pillText="1.01%"
-        trend="down"
-        period="2 Hours ago"
-      />
-      <Card
-        title="Total Balance"
-        value={totalBalance.toString()}
-        pillText="60.75%"
-        trend="up"
-        period="Previous 30 days"
-      />
-    </>
-  );
-}
+    <div className="min-h-screen">
+      <h2>Local Available Balance: {localBalance}</h2>
+      <h2>Total Available Balance (Local + Plaid): {totalBalance}</h2>
 
-export default StatCards;
+      {/* Display Plaid Bank Balances */}
+      {plaidBanks?.accounts?.map(
+        (plaidAccount: PlaidAccount, index: number) => (
+          <div key={index}>
+            <h3>{plaidAccount.name}</h3>
+            <p>
+              Available Balance: {plaidAccount.balances.available}{" "}
+              {plaidAccount.balances.iso_currency_code}
+            </p>
+            <p>
+              Current Balance: {plaidAccount.balances.current}{" "}
+              {plaidAccount.balances.iso_currency_code}
+            </p>
+          </div>
+        )
+      )}
+    </div>
+  );
+};
+
+export default Testing;
