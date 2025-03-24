@@ -44,6 +44,21 @@ const Card = ({
   );
 };
 
+const CardSkeleton = () => {
+  return (
+    <div className="col-span-12 md:col-span-4 p-4 rounded border border-stone-300 dark:bg-[#242424] dark:text-white">
+      <div className="flex mb-8 items-start justify-between">
+        <div className="w-full">
+          <div className="h-4 w-24 bg-stone-200 dark:bg-stone-700 rounded mb-2 animate-pulse"></div>
+          <div className="h-8 w-32 bg-stone-200 dark:bg-stone-700 rounded animate-pulse"></div>
+        </div>
+        <div className="h-6 w-16 bg-stone-200 dark:bg-stone-700 rounded animate-pulse"></div>
+      </div>
+      <div className="h-3 w-20 bg-stone-200 dark:bg-stone-700 rounded animate-pulse"></div>
+    </div>
+  );
+};
+
 function StatCards() {
   const [account, setAccount] = useState<Accounts[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,9 +80,6 @@ function StatCards() {
         }
       } catch (error) {
         console.error("Error fetching user:", error);
-      } finally {
-        setLoading(false);
-        console.log(user?.userId);
       }
     };
 
@@ -105,6 +117,8 @@ function StatCards() {
         }
       } catch (error) {
         console.log("Error fetching banks", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -114,12 +128,13 @@ function StatCards() {
 
   if (loading) {
     return (
-      <div>
-        <h1>Loading Account data...</h1>
-      </div>
+      <>
+        <CardSkeleton />
+        <CardSkeleton />
+        <CardSkeleton />
+      </>
     );
   }
-
   if (!account) {
     return (
       <div>
