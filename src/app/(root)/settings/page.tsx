@@ -70,7 +70,7 @@ export default function Settings() {
     name: "John Doe",
     email: "john.doe@example.com",
     phone: "(123) 456-7890",
-    avatar: "/placeholder.svg?height=100&width=100",
+    avatar: "/profile.jpg",
     address: "123 Main Street, New York, NY 10001",
     language: "english",
     theme: "system",
@@ -92,7 +92,7 @@ export default function Settings() {
       toast.success(
         `Settings updated, Your ${section} settings have been saved successfully.`
       );
-    }, 1000);
+    }, 500);
   };
 
   return (

@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 // UserContext.tsx (or wherever you define the context)
 export type MinimalUser = {
+  role: Role;
   userId: string;
   email: string;
   address1: string;
@@ -24,7 +25,9 @@ interface UserContextType {
   refreshUser: () => void;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+export const UserContext = createContext<UserContextType | undefined>(
+  undefined
+);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<MinimalUser | null>(null);

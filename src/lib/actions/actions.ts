@@ -65,3 +65,18 @@ export async function logout() {
   (await cookies()).delete("session");
   redirect("/login");
 }
+
+type Transaction = {
+  id: string;
+  date: Date;
+  description: string;
+  category: string;
+  amount: number;
+  balance: number;
+};
+
+export async function generatePDF(
+  transactions: Transaction[],
+  dateFrom?: Date,
+  dateTo?: Date
+) {}

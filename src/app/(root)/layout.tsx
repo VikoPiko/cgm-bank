@@ -13,6 +13,7 @@ import I18nProvider from "@/components/custom/I18nextProvider";
 import { Toaster } from "sonner";
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import MainFooter from "@/components/custom/main-app-footer";
+import { UserProvider } from "@/components/custom/UserContext";
 
 async function getUserDataFromSession() {
   const cookieStore = cookies();
@@ -63,28 +64,30 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body>
-        <I18nProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <SidebarProvider defaultOpen={defaultOpen}>
-              <AppSidebar />
-              <SidebarInset>
-                <main>
-                  <SidebarTrigger />
-                  <div className="mb-3 p-3 -mt-2">
-                    <DashboardHeader userId={userId} />
-                  </div>
-                  {children}
-                </main>
-                <MainFooter />
-              </SidebarInset>
-            </SidebarProvider>
-          </ThemeProvider>
-        </I18nProvider>
+        <UserProvider>
+          <I18nProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <SidebarProvider defaultOpen={defaultOpen}>
+                <AppSidebar />
+                <SidebarInset>
+                  <main>
+                    <SidebarTrigger />
+                    <div className="mb-3 p-3 -mt-2">
+                      <DashboardHeader userId={userId} />
+                    </div>
+                    {children}
+                  </main>
+                  <MainFooter />
+                </SidebarInset>
+              </SidebarProvider>
+            </ThemeProvider>
+          </I18nProvider>
+        </UserProvider>
         <Toaster richColors />
       </body>
     </html>

@@ -41,7 +41,7 @@ const AccountSkeleton = () => {
 
 const AccountCard = ({ account }: { account: PlaidAccount }) => {
   return (
-    <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md transition-shadow">
+    <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md hover:bg-[#ebebeb] dark:hover:bg-[#242424] hover:translate-y-[-5px]  duration-200 transition-all">
       <h3 className="text-sm text-stone-500 dark:text-stone-300 mb-1">
         {account.name}
       </h3>
@@ -258,7 +258,7 @@ export default function Dashboard() {
                 ) : (
                   <>
                     {/* Local Account */}
-                    <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+                    <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:translate-y-[-5px]  duration-200 transition-all hover:dark:from-blue-900/40 hover:dark:to-indigo-900/40">
                       <h3 className="text-sm text-stone-500 dark:text-stone-300 mb-1">
                         My Account
                       </h3>

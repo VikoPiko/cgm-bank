@@ -19,38 +19,55 @@ import { Edit, LogOut, Save, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { UserContext } from "@/components/custom/UserContext";
 
 const Page = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [userData, setUser] = useState<Partial<User> | null>(null);
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    // Handle the case where the context is undefined (shouldn't happen if the provider is set up correctly)
+    return <p>Loading user data...</p>;
+  }
+  const { user, refreshUser } = userContext;
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState<User | null>(null);
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch("/api/prisma/users/me");
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-        setFormData(data);
-      }
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [formData, setFormData] = useState<Partial<User> | null>(null);
+  // const fetchUser = async () => {
+  //   try {
+  //     const response = await fetch("/api/prisma/users/me");
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setUser(data);
+  //       setFormData(data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    fetchUser();
+    if (user) {
+      setFormData(user);
+      setUser(user);
+    }
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value } as User);
   };
+
+  // const handleEdit = () => {
+  //   if (user) {
+  //     setFormData({ ...user });
+  //     setEditMode(true);
+  //   } else {
+  //     toast.error("User data not available.");
+  //   }
+  // };
 
   const handleSubmit = async () => {
     try {
@@ -73,7 +90,7 @@ const Page = () => {
     }
   };
 
-  if (loading) {
+  if (!user) {
     return (
       <div className="container mx-auto max-w-3xl py-10">
         <Card>
@@ -92,24 +109,6 @@ const Page = () => {
           </CardContent>
           <CardFooter>
             <Skeleton className="h-10 w-28" />
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="container mx-auto max-w-3xl py-10">
-        <Card className="text-center p-8">
-          <CardTitle className="text-xl mb-4">User Not Found</CardTitle>
-          <CardDescription>
-            We couldn't find your user profile. Please try logging in again.
-          </CardDescription>
-          <CardFooter className="justify-center mt-6">
-            <Button asChild>
-              <Link href="/sign-in">Sign In</Link>
-            </Button>
           </CardFooter>
         </Card>
       </div>
