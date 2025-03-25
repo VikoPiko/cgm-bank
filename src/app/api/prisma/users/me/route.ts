@@ -5,7 +5,7 @@ import { decrypt } from "@/lib/sessions";
 export async function GET(req: NextRequest) {
   try {
     const cookie = req.cookies.get("session")?.value;
-    console.log("Session cookie:", cookie);
+    // console.log("Session cookie:", cookie);
     if (!cookie) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }

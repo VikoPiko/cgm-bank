@@ -44,6 +44,22 @@ export async function createUser(data: User) {
   }
 }
 
+export async function getUserPreferences(userId: string) {
+  try {
+    const response = await prisma.userPreferences.findFirst({
+      where: { userId: userId },
+    });
+    if (!response) {
+      return null; // Return a string as a fallback
+    } else {
+      return response; // Return the preferences object
+    }
+  } catch (error) {
+    console.log("Error getting preferences: ", error);
+    return null; // Return null in case of an error
+  }
+}
+
 export async function getAllUsers() {
   try {
     const users = await prisma.user.findMany();
@@ -130,4 +146,31 @@ function calculateChecksum(routingNumber: string) {
       (digits[2] + digits[5])) %
     10;
   return (10 - checksumValue) % 10; // Adjust to make it modulo 10 = 0
+}
+
+export function generateIBAN(accountNumber: string) {
+  const countryCode = "BG"; // Replace with your country code (e.g., "BG" for Bulgaria)
+  const bankIdentifier = "CGMBANK01"; // Identifier for CGM Bank
+
+  // Generate checksum digits (00 will be recalculated later)
+  let checksum = "00";
+
+  // Construct the initial IBAN without checksum
+  const initialIBAN = `${bankIdentifier}${accountNumber}`;
+
+  // Calculate the checksum digits using a basic mod 97 operation for validity
+  const rearranged = initialIBAN + countryCode + checksum;
+  const numericIBAN = rearranged
+    .split("")
+    .map((char) =>
+      isNaN(Number(char)) ? char.charCodeAt(0) - 55 : Number(char)
+    )
+    .join("");
+
+  checksum = (BigInt(98) - (BigInt(numericIBAN) % BigInt(97)))
+    .toString()
+    .padStart(2, "0");
+
+  // Final IBAN
+  return `${countryCode}${checksum}${bankIdentifier}${accountNumber}`;
 }

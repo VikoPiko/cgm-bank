@@ -6,6 +6,8 @@ import {
   BellRing,
   Settings,
   MonitorCog,
+  Bell,
+  Play,
 } from "lucide-react";
 
 export const sidebarLinks = [
@@ -14,6 +16,11 @@ export const sidebarLinks = [
     route: "/dashboard",
     // Translateable key
     label: "home",
+  },
+  {
+    icon: Play,
+    route: "/actions",
+    label: "Actions",
   },
   {
     icon: Banknote,
@@ -31,7 +38,7 @@ export const sidebarLinks = [
   //   label: "transferFunds",
   // },
   {
-    icon: BellRing,
+    icon: Bell,
     route: "/notifications",
     label: "notificationsRoute",
   },

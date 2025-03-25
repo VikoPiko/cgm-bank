@@ -44,7 +44,7 @@ const Card = ({
   );
 };
 
-const CardSkeleton = () => {
+export const CardSkeleton = () => {
   return (
     <div className="col-span-12 md:col-span-4 p-4 rounded border border-stone-300 dark:bg-[#242424] dark:text-white">
       <div className="flex mb-8 items-start justify-between">

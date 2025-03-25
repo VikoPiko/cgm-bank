@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Shield,
@@ -51,6 +51,9 @@ import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/i18n";
 import { logout } from "@/lib/actions/actions";
+import { useUser } from "@/components/custom/UserContext";
+import { UserPreferences } from "@prisma/client";
+import test from "node:test";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -58,6 +61,8 @@ export default function Settings() {
   const [saveLoading, setSaveLoading] = useState(false);
   const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
+  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
+  const testUser = useUser();
 
   const languages = [
     { code: "en", label: "English" },
@@ -65,22 +70,68 @@ export default function Settings() {
     { code: "bg", label: "Български" },
   ];
 
-  // Mock user data
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "(123) 456-7890",
-    avatar: "/profile.jpg",
-    address: "123 Main Street, New York, NY 10001",
-    language: "english",
-    theme: "system",
-    twoFactorEnabled: true,
-    loginNotifications: true,
-    marketingEmails: false,
-    transactionAlerts: true,
-    securityAlerts: true,
-    balanceAlerts: true,
-    promotionalAlerts: false,
+  const twofac = Boolean(preferences?.twoFactorEnabled) ? "True" : "False";
+
+  useEffect(() => {
+    console.log("ran");
+    async function fetchPreferences() {
+      if (testUser?.userId) {
+        try {
+          const res = await fetch("/api/prisma/users/preferences", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: testUser?.userId }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            setPreferences(data.preferences);
+            console.log(data.preferences);
+            toast.success("Preferences loaded.");
+          } else {
+            toast.error("Failed to load preferences");
+          }
+        } catch (error) {
+          console.log("Error fetching preferences:", error);
+          toast.error("Failed to load preferences");
+        }
+      }
+    }
+
+    fetchPreferences();
+  }, [testUser]);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("/api/prisma/users/preferences", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(preferences),
+      });
+      if (response.ok) {
+        const updatedPreferences = await response.json();
+        setPreferences(updatedPreferences);
+        toast.success("Preferences updated successfully.");
+      } else {
+        toast.error("Failed to update preferences.");
+      }
+    } catch (error) {
+      toast.error("Error updating user.");
+    }
+  };
+
+  const handleSwitchToggle = (key: keyof UserPreferences, value: boolean) => {
+    setPreferences((prevPreferences) => {
+      if (prevPreferences) {
+        return {
+          ...prevPreferences,
+          [key]: value,
+        };
+      }
+      return prevPreferences;
+    });
   };
 
   const handleSaveSettings = (section: string) => {
@@ -89,11 +140,16 @@ export default function Settings() {
     // Simulate API call
     setTimeout(() => {
       setSaveLoading(false);
+      handleSubmit();
       toast.success(
         `Settings updated, Your ${section} settings have been saved successfully.`
       );
     }, 500);
   };
+
+  if (!preferences) {
+    return <div>Loading preferences....</div>;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
@@ -179,7 +235,10 @@ export default function Settings() {
                     <div className="flex flex-col sm:flex-row gap-6 items-start">
                       <div className="flex flex-col items-center gap-2">
                         <Avatar className="h-24 w-24">
-                          <AvatarImage src={user.avatar} alt={user.name} />
+                          <AvatarImage
+                            src={testUser?.avatar}
+                            alt={testUser?.firstName}
+                          />
                           <AvatarFallback>JD</AvatarFallback>
                         </Avatar>
                         <Button variant="outline" size="sm">
@@ -190,19 +249,25 @@ export default function Settings() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={user.name} />
+                            <Input
+                              id="name"
+                              defaultValue={testUser?.firstName}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="email">Email Address</Label>
                             <Input
                               id="email"
                               type="email"
-                              defaultValue={user.email}
+                              defaultValue={testUser?.email}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
-                            <Input id="phone" defaultValue={user.phone} />
+                            <Input
+                              id="phone"
+                              defaultValue={testUser?.phoneNumber}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="dob">Date of Birth</Label>
@@ -215,7 +280,11 @@ export default function Settings() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="address">Address</Label>
-                          <Textarea id="address" defaultValue={user.address} />
+                          <Textarea
+                            id="address"
+                            defaultValue={testUser?.address1}
+                            className="max-h-20"
+                          />
                         </div>
                       </div>
                     </div>
@@ -311,11 +380,19 @@ export default function Settings() {
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Add an extra layer of security to your account
+                            <p>
+                              User: {twofac} : ID: {testUser?.userId}
+                            </p>
                           </div>
                         </div>
-                        <Switch checked={user.twoFactorEnabled} />
+                        <Switch
+                          checked={preferences?.twoFactorEnabled}
+                          onCheckedChange={(checked) =>
+                            handleSwitchToggle("twoFactorEnabled", checked)
+                          }
+                        />
                       </div>
-                      {user.twoFactorEnabled && (
+                      {preferences?.twoFactorEnabled && (
                         <div className="rounded-md bg-muted p-4">
                           <div className="font-medium">
                             Two-factor authentication is enabled
@@ -352,7 +429,12 @@ export default function Settings() {
                             account is accessed from a new device or location
                           </div>
                         </div>
-                        <Switch checked={user.loginNotifications} />
+                        <Switch
+                          checked={preferences?.loginNotifications}
+                          onCheckedChange={(checked) =>
+                            handleSwitchToggle("loginNotifications", checked)
+                          }
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -404,7 +486,12 @@ export default function Settings() {
                                 deposits, and withdrawals
                               </p>
                             </div>
-                            <Switch checked={user.transactionAlerts} />
+                            <Switch
+                              checked={preferences?.transactionAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("transactionAlerts", checked)
+                              }
+                            />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between">
@@ -415,7 +502,12 @@ export default function Settings() {
                                 password changes and login attempts
                               </p>
                             </div>
-                            <Switch checked={user.securityAlerts} />
+                            <Switch
+                              checked={preferences?.securityAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("securityAlerts", checked)
+                              }
+                            />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between">
@@ -426,7 +518,12 @@ export default function Settings() {
                                 below a threshold
                               </p>
                             </div>
-                            <Switch checked={user.balanceAlerts} />
+                            <Switch
+                              checked={preferences?.balanceAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("balanceAlerts", checked)
+                              }
+                            />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between">
@@ -437,7 +534,12 @@ export default function Settings() {
                                 and offers
                               </p>
                             </div>
-                            <Switch checked={user.marketingEmails} />
+                            <Switch
+                              checked={preferences?.marketingEmails}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("marketingEmails", checked)
+                              }
+                            />
                           </div>
                         </div>
                       </TabsContent>
@@ -453,7 +555,12 @@ export default function Settings() {
                                 real-time
                               </p>
                             </div>
-                            <Switch checked={user.transactionAlerts} />
+                            <Switch
+                              checked={preferences?.transactionAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("transactionAlerts", checked)
+                              }
+                            />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between">
@@ -465,7 +572,12 @@ export default function Settings() {
                                 Receive push notifications for security events
                               </p>
                             </div>
-                            <Switch checked={user.securityAlerts} />
+                            <Switch
+                              checked={preferences?.securityAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("securityAlerts", checked)
+                              }
+                            />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between">
@@ -478,7 +590,12 @@ export default function Settings() {
                                 promotions
                               </p>
                             </div>
-                            <Switch checked={user.promotionalAlerts} />
+                            <Switch
+                              checked={preferences?.promotionalAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("promotionalAlerts", checked)
+                              }
+                            />
                           </div>
                         </div>
                       </TabsContent>
@@ -494,7 +611,12 @@ export default function Settings() {
                                 certain amount
                               </p>
                             </div>
-                            <Switch checked={user.transactionAlerts} />
+                            <Switch
+                              checked={preferences?.transactionAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("transactionAlerts", checked)
+                              }
+                            />
                           </div>
                           <Separator />
                           <div className="flex items-center justify-between">
@@ -507,7 +629,12 @@ export default function Settings() {
                                 events
                               </p>
                             </div>
-                            <Switch checked={user.securityAlerts} />
+                            <Switch
+                              checked={preferences?.securityAlerts}
+                              onCheckedChange={(checked) =>
+                                handleSwitchToggle("securityAlerts", checked)
+                              }
+                            />
                           </div>
                         </div>
                       </TabsContent>

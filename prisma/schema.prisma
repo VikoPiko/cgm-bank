@@ -8,28 +8,42 @@ datasource db {
 }
 
 model User {
-  userId         String          @id @default(uuid())
-  firstName      String          @default("")
-  middleName     String          @default("")
-  lastName       String          @default("")
-  email          String          @unique @default("")
-  address1       String          @default("")
-  phoneNumber    String          @default("")
-  country        String          @default("")
-  city           String          @default("")
-  avatar         String          @default("/profile.jpg")
-  password       String          @default("")
-  ssn            String          @default("")
-  dateOfBirth    String          @default("")
-  postalCode     String          @default("")
-  initialDeposit String          @default("25.00")
-  role           Role            @default(CLIENT)
+  userId         String           @id @default(uuid())
+  firstName      String           @default("")
+  middleName     String           @default("")
+  lastName       String           @default("")
+  email          String           @unique @default("")
+  address1       String           @default("")
+  phoneNumber    String           @default("")
+  country        String           @default("")
+  city           String           @default("")
+  avatar         String           @default("/profile.jpg")
+  password       String           @default("")
+  ssn            String           @default("")
+  dateOfBirth    String           @default("")
+  postalCode     String           @default("")
+  initialDeposit String           @default("25.00")
+  role           Role             @default(CLIENT)
   banks          Banks[]
   accounts       Accounts[]
   loans          Loans[]
   notifications  Notifications[]
   Transactions   Transactions[]
-  createdAt      DateTime        @default(now())
+  preferences    UserPreferences? // Optional relation with UserPreferences
+  createdAt      DateTime         @default(now())
+}
+
+model UserPreferences {
+  preferenceId       String  @id @default(uuid())
+  twoFactorEnabled   Boolean @default(false)
+  loginNotifications Boolean @default(false)
+  marketingEmails    Boolean @default(false)
+  transactionAlerts  Boolean @default(false)
+  securityAlerts     Boolean @default(false)
+  balanceAlerts      Boolean @default(false)
+  promotionalAlerts  Boolean @default(false)
+  userId             String  @unique
+  user               User    @relation(fields: [userId], references: [userId])
 }
 
 enum Role {
@@ -54,8 +68,8 @@ model Accounts {
   routingNumber    String?
   iban             String?
   switftBIC        String?
-  availableBalance Float       @default(0.0)
-  currentBalance   Float       @default(0.0)
+  availableBalance Float       @default(25.00)
+  currentBalance   Float       @default(25.00)
   mask             String
   name             String
   officialName     String
@@ -119,6 +133,7 @@ enum TransactionType {
 model Notifications {
   id        String   @id @default(uuid())
   userId    String
+  event     String
   message   String
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())

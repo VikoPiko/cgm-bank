@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import {
+  generateAccountNumber,
+  generateIBAN,
+  generateRoutingNumber,
+} from "@/lib/actions/user.actions";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,8 +21,26 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    const accountNumber = await generateAccountNumber();
+    const routingNumber = await generateRoutingNumber();
     const user = await prisma.user.create({
-      data: { ...data, password: await bcrypt.hash(data.password, 10) },
+      data: {
+        ...data,
+        password: await bcrypt.hash(data.password, 10),
+        preferences: {
+          create: {},
+        },
+        accounts: {
+          create: {
+            accountNumber: accountNumber,
+            routingNumber: routingNumber,
+            iban: generateIBAN(accountNumber),
+            name: "Main Account",
+            mask: "**** **** **** 5167",
+            officialName: "Primary Checking Account",
+          },
+        },
+      },
     });
     return NextResponse.json(user, { status: 201 });
   } catch (error) {

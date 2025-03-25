@@ -33,7 +33,7 @@ interface PlaidData {
   accounts: PlaidAccount[];
 }
 
-export default function Dashboard() {
+const Accounts = () => {
   const [account, setAccount] = useState<Accounts[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [banks, setBanks] = useState<Banks[] | null>(null);
@@ -41,11 +41,12 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const user = useUser();
 
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0.0);
   const [routingNumber, setRoutingNumber] = useState("");
 
   const handleTransfer = () => {
-    console.log("Amount:", amount, "Routing Number:", routingNumber);
+    // console.log("Amount:", amount, "Routing Number:", routingNumber);
+    toast.success(`Successfully sent $${amount} to Account: ${routingNumber}.`);
     setOpen(false); // Close dialog after transfer
   };
 
@@ -140,7 +141,10 @@ export default function Dashboard() {
             Financial Dashboard
           </h1>
           <p className="text-stone-500 dark:text-stone-400">
-            Welcome back{user ? `, ${user.firstName || "User"}` : ""}
+            Welcome back{" "}
+            <span className="text-white">
+              {user ? `, ${user.firstName || "User"}` : ""}
+            </span>
           </p>
         </div>
 
@@ -246,7 +250,7 @@ export default function Dashboard() {
                       type="number"
                       placeholder="Enter amount"
                       value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
+                      onChange={(e) => setAmount(Number(e.target.value))}
                     />
                   </div>
                   <div>
@@ -319,4 +323,6 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default Accounts;
