@@ -45,7 +45,8 @@ export default function Dashboard() {
   const [routingNumber, setRoutingNumber] = useState("");
 
   const handleTransfer = () => {
-    console.log("Amount:", amount, "Routing Number:", routingNumber);
+    // console.log("Amount:", amount, "Routing Number:", routingNumber);
+    toast.success(`Amount:", ${amount}, "Routing Number:", ${routingNumber}`);
     setOpen(false); // Close dialog after transfer
   };
 

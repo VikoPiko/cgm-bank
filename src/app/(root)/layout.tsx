@@ -66,26 +66,19 @@ export default async function RootLayout({
       <body>
         <UserProvider>
           <I18nProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <SidebarProvider defaultOpen={defaultOpen}>
-                <AppSidebar />
-                <SidebarInset>
-                  <main>
-                    <SidebarTrigger />
-                    <div className="mb-3 p-3 -mt-2">
-                      <DashboardHeader userId={userId} />
-                    </div>
-                    {children}
-                  </main>
-                  <MainFooter />
-                </SidebarInset>
-              </SidebarProvider>
-            </ThemeProvider>
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <AppSidebar />
+              <SidebarInset>
+                <main>
+                  <SidebarTrigger />
+                  <div className="mb-3 p-3 -mt-2">
+                    <DashboardHeader userId={userId} />
+                  </div>
+                  {children}
+                </main>
+                <MainFooter />
+              </SidebarInset>
+            </SidebarProvider>
           </I18nProvider>
         </UserProvider>
         <Toaster richColors />

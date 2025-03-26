@@ -148,7 +148,7 @@ export default function Settings() {
   };
 
   if (!preferences) {
-    return <div>Loading preferences....</div>;
+    return <div>Loading Settings....</div>;
   }
 
   return (

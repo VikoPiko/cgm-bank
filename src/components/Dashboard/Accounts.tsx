@@ -36,8 +36,8 @@ interface PlaidData {
 const Accounts = () => {
   const [account, setAccount] = useState<Accounts[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [banks, setBanks] = useState<Banks[] | null>(null);
-  const [plaidBanks, setPlaidBanks] = useState<PlaidData[] | null>(null);
+  const [banks, setBanks] = useState<Banks[]>([]);
+  const [plaidBanks, setPlaidBanks] = useState<PlaidData[]>([]);
   const [open, setOpen] = useState(false);
   const user = useUser();
 
@@ -45,9 +45,8 @@ const Accounts = () => {
   const [routingNumber, setRoutingNumber] = useState("");
 
   const handleTransfer = () => {
-    // console.log("Amount:", amount, "Routing Number:", routingNumber);
     toast.success(`Successfully sent $${amount} to Account: ${routingNumber}.`);
-    setOpen(false); // Close dialog after transfer
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -56,66 +55,46 @@ const Accounts = () => {
         const response = await fetch("/api/prisma/accounts/get-account");
         if (response.ok) {
           const data = await response.json();
-          setAccount(data);
+
+          // Access accounts and banks directly
+          setAccount(data.accounts);
+          setBanks(data.banks);
+
+          // Fetch balances for Plaid-linked banks
+          const plaidDataPromises = data.banks.map(
+            async (bank: { accessToken: any }) => {
+              if (bank.accessToken) {
+                const plaidResponse = await fetch("/api/plaid/get-balances", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ accessToken: bank.accessToken }),
+                });
+
+                if (plaidResponse.ok) {
+                  return await plaidResponse.json();
+                }
+                return null;
+              }
+            }
+          );
+
+          const allPlaidData = await Promise.all(plaidDataPromises);
+          const validPlaidData = allPlaidData.filter((data) => data != null);
+          setPlaidBanks(validPlaidData);
         } else {
-          console.error("Error: ", response.statusText);
+          console.error("Error:", response.statusText);
           toast.error("Failed to load account data");
         }
       } catch (error) {
         console.error("Error fetching user:", error);
         toast.error("Failed to load account data");
-      }
-    };
-
-    const fetchBanks = async () => {
-      if (!user) return;
-
-      try {
-        const res = await fetch("/api/prisma/banks/get-banks", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: user?.userId }),
-        });
-
-        if (res.ok) {
-          const banks = await res.json();
-          setBanks(banks);
-
-          // Fetch plaid data for all linked Plaid accounts
-          const plaidDataPromises = banks.map(async (bank: Banks) => {
-            if (bank.accessToken) {
-              const plaidResponse = await fetch("/api/plaid/get-balances", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ accessToken: bank.accessToken }),
-              });
-
-              if (plaidResponse.ok) {
-                return await plaidResponse.json();
-              }
-            }
-            return null;
-          });
-
-          // Wait for all Plaid data to be fetched
-          const allPlaidData = await Promise.all(plaidDataPromises);
-          const validPlaidData = allPlaidData.filter((data) => data != null);
-          setPlaidBanks(validPlaidData);
-        } else {
-          console.error("Error fetching banks", res.statusText);
-          toast.error("Failed to load bank data");
-        }
-      } catch (error) {
-        console.log("Error fetching banks", error);
-        toast.error("Failed to load bank data");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-    fetchBanks();
-  }, [user]);
+  }, []);
 
   // Calculate balances
   const localBalance = account?.[0]?.availableBalance || 0;

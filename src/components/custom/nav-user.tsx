@@ -31,6 +31,7 @@ import Link from "next/link";
 import { MinimalUser } from "./UserContext";
 import { UpgradeProDialog } from "./upgrade-pro-dialog";
 import { useState } from "react";
+import { logout } from "@/lib/actions/actions";
 
 export function NavUser({ user }: { user: MinimalUser }) {
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
@@ -133,7 +134,7 @@ export function NavUser({ user }: { user: MinimalUser }) {
                 </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={logout}>
                 <LogOut className="text-blue-600 dark:text-blue-400" />
                 {t("logoutButton")}
               </DropdownMenuItem>
