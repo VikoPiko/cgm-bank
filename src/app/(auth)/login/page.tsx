@@ -28,7 +28,7 @@ const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
     const formData = new FormData(event.target as HTMLFormElement);
     const result = await login({}, formData); // Call login with the form data
 
-    if (result.errors) {
+    if (result?.errors) {
       setFormErrors(result.errors);
     }
     window.location.reload();

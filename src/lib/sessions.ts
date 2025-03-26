@@ -45,4 +45,5 @@ export async function createSession(userId: string, role: string) {
     expires: new Date(expiresAt),
     sameSite: "lax",
   });
+  return session;
 }

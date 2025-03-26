@@ -50,8 +50,10 @@ export async function login(prevState: any, formData: FormData) {
     }
 
     // Create session if credentials are correct
-    await createSession(user.userId, user.role);
-    redirect("/dashboard");
+    const session = await createSession(user.userId, user.role);
+    if (session) {
+      redirect("/dashboard");
+    }
   } catch (error) {
     console.error("Error during login:", error);
     return {

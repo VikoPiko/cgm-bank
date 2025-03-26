@@ -14,12 +14,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
-    // Fetch user along with accounts and banks
     const userData = await prisma.user.findUnique({
       where: { userId: String(session.userId) },
       include: {
-        accounts: true, // Include user's accounts
-        banks: true, // Include user's linked banks
+        accounts: true,
+        banks: true,
       },
     });
 
@@ -27,7 +26,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Return combined user data
     return NextResponse.json(userData, { status: 200 });
   } catch (error) {
     console.error("Error fetching user data:", error);

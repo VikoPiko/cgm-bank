@@ -39,9 +39,10 @@ const Accounts = () => {
   const [banks, setBanks] = useState<Banks[]>([]);
   const [plaidBanks, setPlaidBanks] = useState<PlaidData[]>([]);
   const [open, setOpen] = useState(false);
+  const [balance, setBalance] = useState(0.0);
   const user = useUser();
 
-  const [amount, setAmount] = useState(0.0);
+  const [amount, setAmount] = useState<string>("0.00");
   const [routingNumber, setRoutingNumber] = useState("");
 
   const handleTransfer = () => {
@@ -55,12 +56,10 @@ const Accounts = () => {
         const response = await fetch("/api/prisma/accounts/get-account");
         if (response.ok) {
           const data = await response.json();
-
-          // Access accounts and banks directly
           setAccount(data.accounts);
+          setBalance(data.accounts[0]?.availableBalance);
           setBanks(data.banks);
 
-          // Fetch balances for Plaid-linked banks
           const plaidDataPromises = data.banks.map(
             async (bank: { accessToken: any }) => {
               if (bank.accessToken) {
@@ -92,12 +91,55 @@ const Accounts = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
-  // Calculate balances
-  const localBalance = account?.[0]?.availableBalance || 0;
+  const handleDeposit = async (enteredAmount: number) => {
+    await handleTransaction(enteredAmount, "Deposit");
+  };
+
+  const handleWithdraw = async (enteredAmount: number) => {
+    const negativeAmount = -Math.abs(enteredAmount); // Ensure withdrawal is negative
+    await handleTransaction(negativeAmount, "Withdraw");
+  };
+
+  const handleTransaction = async (
+    transactionAmount: number,
+    action: string
+  ) => {
+    try {
+      if (user?.userId && balance !== null) {
+        setBalance((prevBalance) => (prevBalance ?? 0) + transactionAmount);
+
+        const response = await fetch("/api/prisma/accounts/update-account", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.userId,
+            amount: transactionAmount,
+          }),
+        });
+
+        if (response.ok) {
+          const updatedBalance = await response.json();
+          setBalance(updatedBalance.availableBalance);
+          toast.success(
+            `${action} $${Math.abs(transactionAmount)} Successfully.`
+          );
+        } else {
+          setBalance((prevBalance) => (prevBalance ?? 0) - transactionAmount);
+          toast.error(`${action} Failed.`);
+        }
+      } else {
+        toast.error("User not found. Please log in.");
+      }
+    } catch (error) {
+      console.error("Error occurred:", error);
+      toast.error("Error occurred while processing the transaction.");
+    }
+  };
+
+  // const localBalance = account?.[0]?.availableBalance || 0;
   const plaidBalance =
     plaidBanks?.reduce(
       (total, plaidData) =>
@@ -110,21 +152,57 @@ const Accounts = () => {
       0
     ) || 0;
 
-  const totalBalance = localBalance + plaidBalance;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d*$/.test(value)) {
+      setAmount(value);
+    }
+  };
+
+  const handleBlur = () => {
+    const formattedAmount = parseFloat(amount).toFixed(2);
+    setAmount(formattedAmount);
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#121212]">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2 dark:text-white">
-            Financial Dashboard
-          </h1>
-          <p className="text-stone-500 dark:text-stone-400">
-            Welcome back{" "}
-            <span className="text-white">
-              {user ? `, ${user.firstName || "User"}` : ""}
-            </span>
-          </p>
+        <div className="mb-8 flex justify-between">
+          <div>
+            <h1 className="text-2xl font-bold mb-2 dark:text-white">
+              Financial Dashboard
+            </h1>
+            <p className="text-stone-500 dark:text-stone-400">
+              Welcome back{" "}
+              <span className="text-white">
+                {user ? `, ${user.firstName || "User"}` : ""}
+              </span>
+            </p>
+          </div>
+
+          {/* Deposit and Withdraw Buttons */}
+          <div className="gap-2 flex flex-col">
+            <input
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={handleInputChange}
+              placeholder="Enter amount"
+              className="border border-gray-300 p-2 rounded-md text-center w-24"
+            />
+            <Button
+              onClick={() => handleTransaction(parseFloat(amount), "Deposit")}
+              disabled={parseFloat(amount) <= 0}
+            >
+              Deposit
+            </Button>
+            <Button
+              onClick={() => handleTransaction(-parseFloat(amount), "Withdraw")}
+              disabled={parseFloat(amount) <= 0}
+            >
+              Withdraw
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -150,7 +228,7 @@ const Accounts = () => {
                         My Account
                       </h3>
                       <p className="text-xl font-semibold mb-1">
-                        ${localBalance.toFixed(2)}
+                        ${balance.toFixed(2)}
                       </p>
                       <p className="text-xs text-stone-500 dark:text-stone-400">
                         Primary Account
@@ -229,7 +307,7 @@ const Accounts = () => {
                       type="number"
                       placeholder="Enter amount"
                       value={amount}
-                      onChange={(e) => setAmount(Number(e.target.value))}
+                      onChange={(e) => setAmount(e.target.value)}
                     />
                   </div>
                   <div>
