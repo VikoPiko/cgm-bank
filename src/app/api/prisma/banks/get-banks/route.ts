@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await req.json(); // Destructure to get userId from the request body
+    const { userId } = await req.json();
 
     if (!userId) {
       return NextResponse.json(

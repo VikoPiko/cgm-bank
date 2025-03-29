@@ -1,9 +1,6 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
-  Shield,
   User,
   Lock,
   Bell,
@@ -16,9 +13,9 @@ import {
   Smartphone,
   CreditCard,
   LogOut,
-  ArrowLeft,
   Save,
   Plus,
+  Info,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -45,24 +42,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/i18n";
 import { logout } from "@/lib/actions/actions";
-import { useUser } from "@/components/custom/UserContext";
+import { MinimalUser, useUser } from "@/components/custom/UserContext";
 import { UserPreferences } from "@prisma/client";
-import test from "node:test";
+import { Skeleton } from "@/components/ui/skeleton";
+import Upload from "@/components/custom/UploadThing";
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("Profile");
   const [showPassword, setShowPassword] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
-  const testUser = useUser();
+  const { user, getPreferences, refreshUser } = useUser();
+  const [userData, setUser] = useState<MinimalUser | null>(null);
+  const [formData, setFormData] = useState<Partial<MinimalUser> | null>(null);
+
+  const [object, setObject] = useState<UserPreferences>();
 
   const languages = [
     { code: "en", label: "English" },
@@ -70,49 +71,28 @@ export default function Settings() {
     { code: "bg", label: "Български" },
   ];
 
-  const twofac = Boolean(preferences?.twoFactorEnabled) ? "True" : "False";
-
   useEffect(() => {
-    console.log("ran");
-    async function fetchPreferences() {
-      if (testUser?.userId) {
-        try {
-          const res = await fetch("/api/prisma/users/preferences", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: testUser?.userId }),
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            setPreferences(data.preferences);
-            console.log(data.preferences);
-            toast.success("Preferences loaded.");
-          } else {
-            toast.error("Failed to load preferences");
-          }
-        } catch (error) {
-          console.log("Error fetching preferences:", error);
-          toast.error("Failed to load preferences");
-        }
+    const fetchData = async () => {
+      const pref = getPreferences();
+      if (user) {
+        setFormData(user);
+        setUser(user);
+        setObject(pref);
       }
-    }
-
-    fetchPreferences();
-  }, [testUser]);
+    };
+    fetchData();
+  }, [user]);
 
   const handleSubmit = async () => {
     try {
       const response = await fetch("/api/prisma/users/preferences", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(preferences),
+        body: JSON.stringify(object),
       });
       if (response.ok) {
         const updatedPreferences = await response.json();
-        setPreferences(updatedPreferences);
+        setObject(updatedPreferences);
         toast.success("Preferences updated successfully.");
       } else {
         toast.error("Failed to update preferences.");
@@ -123,7 +103,7 @@ export default function Settings() {
   };
 
   const handleSwitchToggle = (key: keyof UserPreferences, value: boolean) => {
-    setPreferences((prevPreferences) => {
+    setObject((prevPreferences) => {
       if (prevPreferences) {
         return {
           ...prevPreferences,
@@ -134,21 +114,128 @@ export default function Settings() {
     });
   };
 
-  const handleSaveSettings = (section: string) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleProfileSumbit = async () => {
+    try {
+      const {
+        accounts,
+        banks,
+        notifications,
+        transactions,
+        preferences,
+        ...filteredFormData
+      } = formData || {};
+
+      const response = await fetch("/api/prisma/users/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filteredFormData),
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+        refreshUser();
+        toast.success("Profile updated successfully.");
+      } else {
+        console.error("Failed to update profile.");
+        toast.error("Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
+
+  const capitalizeFirstLetter = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
+
+  const getEventType = (section: string) => {
+    const normalizedSection = section.toLowerCase();
+
+    if (
+      normalizedSection === "profile" ||
+      normalizedSection === "preferences"
+    ) {
+      return "Account";
+    }
+    if (normalizedSection === "security" || normalizedSection === "devices") {
+      return "Security";
+    }
+    return "General";
+  };
+
+  const handleSaveSettings = async (section: string) => {
     setSaveLoading(true);
 
-    // Simulate API call
+    const notificationData = {
+      userId: user?.userId,
+      type: getEventType(section),
+      event: `${capitalizeFirstLetter(section)} Changed.`,
+      message: `Settings updated, Your ${capitalizeFirstLetter(
+        section
+      )} settings have been saved successfully.`,
+      icon: "Info",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
+    };
+
+    const newNotif = await fetch(
+      "/api/prisma/notifications/add-notifications",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(notificationData),
+      }
+    );
+
+    toast.success(`TYPE: ${getEventType(section)}`);
     setTimeout(() => {
       setSaveLoading(false);
-      handleSubmit();
+      if (activeTab === "Security" || activeTab === "Notifications") {
+        handleSubmit();
+      }
+      if (activeTab === "Profile") {
+        handleProfileSumbit();
+      }
       toast.success(
         `Settings updated, Your ${section} settings have been saved successfully.`
       );
     }, 500);
   };
 
-  if (!preferences) {
+  if (!object) {
     return <div>Loading Settings....</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto max-w-3xl py-10">
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Skeleton className="h-32 w-32 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Skeleton className="h-10 w-28" />
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -169,27 +256,27 @@ export default function Settings() {
                 <nav className="flex flex-col">
                   {[
                     {
-                      id: "profile",
+                      id: "Profile",
                       label: "Profile",
                       icon: <User className="h-4 w-4" />,
                     },
                     {
-                      id: "security",
+                      id: "Security",
                       label: "Security",
                       icon: <Lock className="h-4 w-4" />,
                     },
                     {
-                      id: "notifications",
+                      id: "Notifications",
                       label: "Notifications",
                       icon: <Bell className="h-4 w-4" />,
                     },
                     {
-                      id: "preferences",
+                      id: "Preferences",
                       label: "Preferences",
                       icon: <Globe className="h-4 w-4" />,
                     },
                     {
-                      id: "devices",
+                      id: "Devices",
                       label: "Devices & Cards",
                       icon: <Smartphone className="h-4 w-4" />,
                     },
@@ -223,7 +310,7 @@ export default function Settings() {
             {/* Settings Content */}
             <div className="space-y-6">
               {/* Profile Settings */}
-              {activeTab === "profile" && (
+              {activeTab === "Profile" && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Profile Information</CardTitle>
@@ -236,14 +323,15 @@ export default function Settings() {
                       <div className="flex flex-col items-center gap-2">
                         <Avatar className="h-24 w-24">
                           <AvatarImage
-                            src={testUser?.avatar}
-                            alt={testUser?.firstName}
+                            src={user?.avatar}
+                            alt={user?.firstName}
                           />
-                          <AvatarFallback>JD</AvatarFallback>
+                          <AvatarFallback>
+                            {user.firstName[0]}
+                            {user.lastName[0]}
+                          </AvatarFallback>
                         </Avatar>
-                        <Button variant="outline" size="sm">
-                          Change Photo
-                        </Button>
+                        <Upload />
                       </div>
                       <div className="flex-1 space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -251,7 +339,9 @@ export default function Settings() {
                             <Label htmlFor="name">Full Name</Label>
                             <Input
                               id="name"
-                              defaultValue={testUser?.firstName}
+                              defaultValue={formData?.firstName}
+                              name="firstName"
+                              onChange={handleInputChange}
                             />
                           </div>
                           <div className="space-y-2">
@@ -259,14 +349,18 @@ export default function Settings() {
                             <Input
                               id="email"
                               type="email"
-                              defaultValue={testUser?.email}
+                              defaultValue={formData?.email}
+                              name="email"
+                              onChange={handleInputChange}
                             />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number</Label>
                             <Input
                               id="phone"
-                              defaultValue={testUser?.phoneNumber}
+                              defaultValue={formData?.phoneNumber}
+                              name="phoneNumber"
+                              onChange={handleInputChange}
                             />
                           </div>
                           <div className="space-y-2">
@@ -274,7 +368,9 @@ export default function Settings() {
                             <Input
                               id="dob"
                               type="date"
-                              defaultValue="1990-01-01"
+                              defaultValue={formData?.dateOfBirth}
+                              name="dateOfBirth"
+                              onChange={handleInputChange}
                             />
                           </div>
                         </div>
@@ -282,7 +378,9 @@ export default function Settings() {
                           <Label htmlFor="address">Address</Label>
                           <Textarea
                             id="address"
-                            defaultValue={testUser?.address1}
+                            defaultValue={formData?.address1}
+                            name="address1"
+                            onChange={handleInputChange}
                             className="max-h-20"
                           />
                         </div>
@@ -308,7 +406,7 @@ export default function Settings() {
               )}
 
               {/* Security Settings */}
-              {activeTab === "security" && (
+              {activeTab === "Security" && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Security Settings</CardTitle>
@@ -380,19 +478,16 @@ export default function Settings() {
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Add an extra layer of security to your account
-                            <p>
-                              User: {twofac} : ID: {testUser?.userId}
-                            </p>
                           </div>
                         </div>
                         <Switch
-                          checked={preferences?.twoFactorEnabled}
+                          checked={object.twoFactorEnabled}
                           onCheckedChange={(checked) =>
                             handleSwitchToggle("twoFactorEnabled", checked)
                           }
                         />
                       </div>
-                      {preferences?.twoFactorEnabled && (
+                      {object?.twoFactorEnabled && (
                         <div className="rounded-md bg-muted p-4">
                           <div className="font-medium">
                             Two-factor authentication is enabled
@@ -430,7 +525,7 @@ export default function Settings() {
                           </div>
                         </div>
                         <Switch
-                          checked={preferences?.loginNotifications}
+                          checked={object?.loginNotifications}
                           onCheckedChange={(checked) =>
                             handleSwitchToggle("loginNotifications", checked)
                           }
@@ -457,7 +552,7 @@ export default function Settings() {
               )}
 
               {/* Notification Settings */}
-              {activeTab === "notifications" && (
+              {activeTab === "Notifications" && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Notification Preferences</CardTitle>
@@ -487,7 +582,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.transactionAlerts}
+                              checked={object?.transactionAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("transactionAlerts", checked)
                               }
@@ -503,7 +598,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.securityAlerts}
+                              checked={object?.securityAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("securityAlerts", checked)
                               }
@@ -519,7 +614,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.balanceAlerts}
+                              checked={object?.balanceAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("balanceAlerts", checked)
                               }
@@ -535,7 +630,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.marketingEmails}
+                              checked={object?.marketingEmails}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("marketingEmails", checked)
                               }
@@ -556,7 +651,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.transactionAlerts}
+                              checked={object?.transactionAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("transactionAlerts", checked)
                               }
@@ -573,7 +668,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.securityAlerts}
+                              checked={object?.securityAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("securityAlerts", checked)
                               }
@@ -591,7 +686,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.promotionalAlerts}
+                              checked={object?.promotionalAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("promotionalAlerts", checked)
                               }
@@ -612,7 +707,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.transactionAlerts}
+                              checked={object?.transactionAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("transactionAlerts", checked)
                               }
@@ -630,7 +725,7 @@ export default function Settings() {
                               </p>
                             </div>
                             <Switch
-                              checked={preferences?.securityAlerts}
+                              checked={object?.securityAlerts}
                               onCheckedChange={(checked) =>
                                 handleSwitchToggle("securityAlerts", checked)
                               }
@@ -659,7 +754,7 @@ export default function Settings() {
               )}
 
               {/* Preferences Settings */}
-              {activeTab === "preferences" && (
+              {activeTab === "Preferences" && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Preferences</CardTitle>
@@ -817,7 +912,7 @@ export default function Settings() {
               )}
 
               {/* Devices & Cards Settings */}
-              {activeTab === "devices" && (
+              {activeTab === "Devices" && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Devices & Cards</CardTitle>

@@ -18,11 +18,9 @@ import { UserProvider } from "@/components/custom/UserContext";
 async function getUserDataFromSession() {
   const cookieStore = cookies();
   const cookie = (await cookieStore).get("session")?.value;
-
   if (!cookie) {
     return null;
   }
-
   const session = await decrypt(cookie);
   if (!session?.userId) {
     return null;
@@ -46,7 +44,6 @@ async function getUserDataFromSession() {
       avatar: true,
     },
   });
-
   return user;
 }
 
@@ -57,9 +54,8 @@ export default async function RootLayout({
   const defaultOpen =
     (await cookieStore).get("sidebar_state")?.value === "true";
 
-  // Get user data from session
   const user = await getUserDataFromSession();
-  const userId = user?.userId || ""; // Set userId
+  const userId = user?.userId || "";
 
   return (
     <html suppressHydrationWarning>
@@ -71,7 +67,7 @@ export default async function RootLayout({
               <SidebarInset>
                 <main>
                   <SidebarTrigger />
-                  <div className="mb-3 p-3 -mt-2">
+                  <div className="px-8 bg-white dark:bg-[#121212]">
                     <DashboardHeader userId={userId} />
                   </div>
                   {children}

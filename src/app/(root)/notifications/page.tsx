@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Shield,
@@ -16,6 +16,8 @@ import {
   CheckCheck,
   Trash2,
 } from "lucide-react";
+import * as Icons from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -29,9 +31,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUser } from "@/components/custom/UserContext";
+import { Notifications } from "@prisma/client";
+import { toast } from "sonner";
+
+const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
 
 export default function NotificationsPage() {
   // Sample notification data
+  const { user, getNotifications } = useUser();
+  const [notifs, setNotifs] = useState<Notifications[]>([]);
+  useEffect(() => {
+    if (user) {
+      const notif = getNotifications() || [];
+      setNotifs(notif);
+    }
+  }, [user]);
+
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -128,22 +144,62 @@ export default function NotificationsPage() {
       iconBg: "bg-red-100",
       iconColor: "text-red-600",
     },
+    {
+      id: 9,
+      type: "security",
+      title: "Security Alert",
+      description:
+        "We noticed a login attempt from an unrecognized location. Please verify it was you.",
+      timestamp: "2 weeks ago",
+      read: true,
+      icon: <AlertTriangle className="h-5 w-5" />,
+      iconBg: "bg-red-100",
+      iconColor: "text-red-600",
+    },
   ]);
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      const response = await fetch(
+        "/api/prisma/notifications/update-notification",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: notificationId, isRead: true }),
+        }
+      );
+      if (response.ok) {
+        toast.success("Notification read.");
+      } else {
+        toast.error("Failed to read");
+      }
+
+      setNotifs((prevNotifications) =>
+        prevNotifications.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
 
   const [activeTab, setActiveTab] = useState("all");
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
 
   // Filter notifications based on active tab and unread filter
-  const filteredNotifications = notifications.filter((notification) => {
-    if (showUnreadOnly && notification.read) return false;
+  const filteredNotifications = notifs.filter((notification) => {
+    if (showUnreadOnly && notification.isRead) return false;
     if (activeTab === "all") return true;
     return notification.type === activeTab;
   });
 
   // Mark a notification as read
-  const markAsRead = (id: number) => {
-    setNotifications(
-      notifications.map((notification) =>
+  const markAsRead = (id: string) => {
+    setNotifs(
+      notifs.map((notification) =>
         notification.id === id ? { ...notification, read: true } : notification
       )
     );
@@ -151,19 +207,17 @@ export default function NotificationsPage() {
 
   // Mark all notifications as read
   const markAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({ ...notification, read: true }))
-    );
+    setNotifs(notifs.map((notification) => ({ ...notification, read: true })));
   };
 
   // Clear all notifications
   const clearAllNotifications = () => {
-    setNotifications([]);
+    setNotifs([]);
   };
 
   // Count unread notifications
-  const unreadCount = notifications.filter(
-    (notification) => !notification.read
+  const unreadCount = notifs.filter(
+    (notification) => !notification.isRead
   ).length;
 
   return (
@@ -245,52 +299,66 @@ export default function NotificationsPage() {
                     </div>
                   ) : (
                     <ul className="divide-y">
-                      {filteredNotifications.map((notification) => (
-                        <li
-                          key={notification.id}
-                          className={`p-4 hover:bg-muted/50 transition-colors ${
-                            !notification.read ? "bg-muted/30" : ""
-                          }`}
-                        >
-                          <div className="flex items-start gap-4">
-                            <div
-                              className={`flex-shrink-0 rounded-full p-2 ${notification.iconBg}`}
-                            >
-                              <div className={notification.iconColor}>
-                                {notification.icon}
-                              </div>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
-                                <p
-                                  className={`text-sm font-medium ${
-                                    !notification.read ? "font-semibold" : ""
-                                  }`}
-                                >
-                                  {notification.title}
-                                </p>
-                                <span className="text-xs text-muted-foreground">
-                                  {notification.timestamp}
-                                </span>
-                              </div>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {notification.description}
-                              </p>
-                            </div>
-                            {!notification.read && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="flex-shrink-0"
-                                onClick={() => markAsRead(notification.id)}
+                      {filteredNotifications.map((notification) => {
+                        const IconComponent = LucideIcons[notification.icon]; // Access dynamically
+
+                        return (
+                          <li
+                            key={notification.id}
+                            className={`p-4 hover:bg-muted/50 transition-colors ${
+                              !notification.isRead ? "bg-muted/30" : ""
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <div
+                                className={`flex-shrink-0 rounded-full p-2 ${notification.iconBg}`}
                               >
-                                <Check className="h-4 w-4" />
-                                <span className="sr-only">Mark as read</span>
-                              </Button>
-                            )}
-                          </div>
-                        </li>
-                      ))}
+                                {IconComponent ? (
+                                  <IconComponent
+                                    className={`h-5 w-5 ${notification.iconColor}`}
+                                  />
+                                ) : (
+                                  <Icons.AlertTriangle className="h-5 w-5 text-red-500" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <p
+                                    className={`text-sm font-medium ${
+                                      !notification.isRead
+                                        ? "font-semibold"
+                                        : ""
+                                    }`}
+                                  >
+                                    {notification.event}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(
+                                      notification.createdAt
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {notification.message}
+                                </p>
+                              </div>
+                              {!notification.isRead && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="flex-shrink-0"
+                                  onClick={() =>
+                                    handleMarkAsRead(notification.id)
+                                  }
+                                >
+                                  <Icons.Check className="h-4 w-4" />
+                                  <span className="sr-only">Mark as read</span>
+                                </Button>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                 </CardContent>

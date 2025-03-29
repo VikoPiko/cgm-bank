@@ -40,9 +40,10 @@ const Accounts = () => {
   const [plaidBanks, setPlaidBanks] = useState<PlaidData[]>([]);
   const [open, setOpen] = useState(false);
   const [balance, setBalance] = useState(0.0);
-  const user = useUser();
+  const { user, getAccounts, getBanks, getPlaidBanks } = useUser();
 
   const [amount, setAmount] = useState<string>("0.00");
+  const [transferAmount, setTransferAmount] = useState<string>("0.00");
   const [routingNumber, setRoutingNumber] = useState("");
 
   const handleTransfer = () => {
@@ -51,55 +52,56 @@ const Accounts = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/prisma/accounts/get-account");
-        if (response.ok) {
-          const data = await response.json();
-          setAccount(data.accounts);
-          setBalance(data.accounts[0]?.availableBalance);
-          setBanks(data.banks);
+    if (user) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch("/api/prisma/accounts/get-account");
+          if (response.ok) {
+            const data = await response.json();
+            setAccount(data.accounts);
+            setBalance(data.accounts[0]?.availableBalance);
+            setBanks(data.banks);
 
-          const plaidDataPromises = data.banks.map(
-            async (bank: { accessToken: any }) => {
-              if (bank.accessToken) {
-                const plaidResponse = await fetch("/api/plaid/get-balances", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ accessToken: bank.accessToken }),
-                });
+            const plaidDataPromises = data.banks.map(
+              async (bank: { accessToken: any }) => {
+                if (bank.accessToken) {
+                  const plaidResponse = await fetch("/api/plaid/get-balances", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ accessToken: bank.accessToken }),
+                  });
 
-                if (plaidResponse.ok) {
-                  return await plaidResponse.json();
+                  if (plaidResponse.ok) {
+                    return await plaidResponse.json();
+                  }
+                  return null;
                 }
-                return null;
               }
-            }
-          );
-
-          const allPlaidData = await Promise.all(plaidDataPromises);
-          const validPlaidData = allPlaidData.filter((data) => data != null);
-          setPlaidBanks(validPlaidData);
-        } else {
-          console.error("Error:", response.statusText);
+            );
+            const allPlaidData = await Promise.all(plaidDataPromises);
+            const validPlaidData = allPlaidData.filter((data) => data != null);
+            setPlaidBanks(validPlaidData);
+          } else {
+            console.error("Error:", response.statusText);
+            toast.error("Failed to load account data");
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
           toast.error("Failed to load account data");
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        toast.error("Failed to load account data");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+      };
+      fetchData();
+    }
+  }, [user]);
 
   const handleDeposit = async (enteredAmount: number) => {
     await handleTransaction(enteredAmount, "Deposit");
   };
 
   const handleWithdraw = async (enteredAmount: number) => {
-    const negativeAmount = -Math.abs(enteredAmount); // Ensure withdrawal is negative
+    const negativeAmount = -Math.abs(enteredAmount);
     await handleTransaction(negativeAmount, "Withdraw");
   };
 
@@ -139,7 +141,6 @@ const Accounts = () => {
     }
   };
 
-  // const localBalance = account?.[0]?.availableBalance || 0;
   const plaidBalance =
     plaidBanks?.reduce(
       (total, plaidData) =>
@@ -165,30 +166,29 @@ const Accounts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#121212]">
+    <div className="min-h-screen bg-white dark:bg-[#101010]">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-2 dark:text-white">
               Financial Dashboard
             </h1>
-            <p className="text-stone-500 dark:text-stone-400">
+            <p className="text-stone-500 dark:text-stone-400 text-lg">
               Welcome back{" "}
-              <span className="text-white">
+              <span className="dark:text-blue-400 text-black font-semibold text-lg tracking-wide">
                 {user ? `, ${user.firstName || "User"}` : ""}
               </span>
             </p>
           </div>
 
-          {/* Deposit and Withdraw Buttons */}
-          <div className="gap-2 flex flex-col">
+          <div className="gap-2 flex flex-row">
             <input
               type="number"
               step="0.01"
               value={amount}
               onChange={handleInputChange}
               placeholder="Enter amount"
-              className="border border-gray-300 p-2 rounded-md text-center w-24"
+              className="border border-gray-300 p-2 rounded-md text-center w-28 h-10"
             />
             <Button
               onClick={() => handleTransaction(parseFloat(amount), "Deposit")}
@@ -206,7 +206,6 @@ const Accounts = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Connected Accounts */}
           <div className="lg:col-span-2">
             <div className="mb-6">
               <h2 className="text-lg font-medium mb-4 dark:text-white">
@@ -222,20 +221,17 @@ const Accounts = () => {
                   </>
                 ) : (
                   <>
-                    {/* Local Account */}
-                    <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:translate-y-[-5px]  duration-200 transition-all hover:dark:from-blue-900/40 hover:dark:to-indigo-900/40">
-                      <h3 className="text-sm text-stone-500 dark:text-stone-300 mb-1">
+                    <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md bg-gradient-to-br from-blue-500/30 to-indigo-500/30 hover:from-blue-600/30 hover:to-indigo-600/30 dark:from-blue-900/20 dark:to-indigo-900/20 hover:translate-y-[-5px]  duration-200 transition-all hover:dark:from-blue-900/40 hover:dark:to-indigo-900/40">
+                      <h3 className="text-sm text-stone-700 dark:text-stone-300 mb-1">
                         My Account
                       </h3>
                       <p className="text-xl font-semibold mb-1">
                         ${balance.toFixed(2)}
                       </p>
-                      <p className="text-xs text-stone-500 dark:text-stone-400">
+                      <p className="text-xs text-stone-700 dark:text-stone-300">
                         Primary Account
                       </p>
                     </div>
-
-                    {/* Plaid Accounts */}
                     {plaidBanks?.map((plaidData, index) =>
                       plaidData.accounts?.map((plaidAccount, accountIndex) => (
                         <AccountCard
@@ -248,8 +244,6 @@ const Accounts = () => {
                 )}
               </div>
             </div>
-
-            {/* Recent Activity */}
             <div>
               <h2 className="text-lg font-medium mb-4 dark:text-white">
                 Recent Activity
@@ -261,8 +255,6 @@ const Accounts = () => {
               )}
             </div>
           </div>
-
-          {/* Right Sidebar */}
           <div className="lg:col-span-1">
             <h2 className="text-lg font-medium mb-4 dark:text-white">
               Quick Actions

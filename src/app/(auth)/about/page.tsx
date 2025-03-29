@@ -27,7 +27,7 @@ export default function AboutPage() {
                   Banking with a purpose
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  SecureBank was founded with a simple mission: to create a bank
+                  CGM Bank was founded with a simple mission: to create a bank
                   that puts people first. We combine innovative technology with
                   personalized service to deliver a better banking experience.
                 </p>
@@ -45,7 +45,7 @@ export default function AboutPage() {
               <div className="relative h-[300px] md:h-[400px] lg:h-[500px] rounded-xl overflow-hidden">
                 <Image
                   src="/about.jpg"
-                  alt="About SecureBank"
+                  alt="About CGM Bank"
                   fill
                   className="object-cover"
                 />
@@ -164,21 +164,23 @@ export default function AboutPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-60 w-full">
                   <Image
-                    src="/placeholder.svg?height=240&width=360"
+                    src="/vikopiko.jpg"
                     alt="CEO"
                     fill
-                    className="object-cover"
+                    className="object-cover object-top p-2"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>Sarah Johnson</CardTitle>
+                  <CardTitle>Viktor Pikolov</CardTitle>
                   <CardDescription>Chief Executive Officer</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    With over 20 years of experience in financial services,
-                    Sarah leads our company with a focus on innovation and
-                    customer-centric banking.
+                    With over 20 years of experience (and being alive) in
+                    financial services, Viko leads our company with a focus on
+                    innovation and customer-centric banking.
+                    <br />
+                    <sub>And yes, that’s 50 Cent.</sub>
                   </p>
                 </CardContent>
               </Card>
@@ -186,21 +188,21 @@ export default function AboutPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-60 w-full">
                   <Image
-                    src="/placeholder.svg?height=240&width=360"
+                    src="/elon.jpg"
                     alt="CTO"
                     fill
-                    className="object-cover"
+                    className="object-cover p-2"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>Michael Chen</CardTitle>
+                  <CardTitle>Elon Musk</CardTitle>
                   <CardDescription>Chief Technology Officer</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Michael oversees our technology strategy, ensuring we
-                    deliver secure, cutting-edge digital banking solutions to
-                    our customers.
+                    Elon oversees our technology strategy, ensuring we deliver
+                    secure, cutting-edge digital banking solutions to our
+                    customers. And rockets.... and flamethrowers...
                   </p>
                 </CardContent>
               </Card>
@@ -208,21 +210,21 @@ export default function AboutPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-60 w-full">
                   <Image
-                    src="/placeholder.svg?height=240&width=360"
+                    src="/warren.jpg"
                     alt="CFO"
                     fill
-                    className="object-cover"
+                    className="object-cover p-2"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>David Rodriguez</CardTitle>
+                  <CardTitle>Warren Buffet</CardTitle>
                   <CardDescription>Chief Financial Officer</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    David brings extensive financial expertise to ensure our
+                    Warren brings extensive financial expertise to ensure our
                     bank's stability and growth while maintaining the highest
-                    standards of fiscal responsibility.
+                    standards of fiscal responsibility. And he's old so win win.
                   </p>
                 </CardContent>
               </Card>
@@ -244,7 +246,7 @@ export default function AboutPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <Users className="h-6 w-6 text-primary" />
@@ -259,7 +261,7 @@ export default function AboutPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <svg
@@ -288,7 +290,7 @@ export default function AboutPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <svg
@@ -319,7 +321,7 @@ export default function AboutPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <svg
@@ -356,7 +358,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
+        <section className="w-full py-12 md:py-24 bg-primary dark:bg-[#242424] dark:text-white text-primary-foreground">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="grid gap-10 lg:grid-cols-2">
               <div className="space-y-4">
@@ -389,7 +391,7 @@ export default function AboutPage() {
                     <Mail className="h-5 w-5 mt-0.5" />
                     <div>
                       <h3 className="font-medium">Email</h3>
-                      <p className="text-sm">support@securebank.com</p>
+                      <p className="text-sm">support@CGM Bank.com</p>
                     </div>
                   </div>
                 </div>
@@ -403,25 +405,19 @@ export default function AboutPage() {
                   </TabsList>
                   <TabsContent value="locations" className="mt-6 space-y-4">
                     <div className="rounded-lg bg-primary-foreground/10 p-4">
-                      <h3 className="font-medium text-primary-foreground">
-                        New York
-                      </h3>
+                      <h3 className="font-medium">New York</h3>
                       <p className="text-sm">
                         123 Financial Street, New York, NY 10001
                       </p>
                     </div>
                     <div className="rounded-lg bg-primary-foreground/10 p-4">
-                      <h3 className="font-medium text-primary-foreground">
-                        San Francisco
-                      </h3>
+                      <h3 className="font-medium">San Francisco</h3>
                       <p className="text-sm">
                         456 Banking Avenue, San Francisco, CA 94103
                       </p>
                     </div>
                     <div className="rounded-lg bg-primary-foreground/10 p-4">
-                      <h3 className="font-medium text-primary-foreground">
-                        Chicago
-                      </h3>
+                      <h3 className="font-medium ">Chicago</h3>
                       <p className="text-sm">
                         789 Secure Boulevard, Chicago, IL 60601
                       </p>
@@ -429,9 +425,7 @@ export default function AboutPage() {
                   </TabsContent>
                   <TabsContent value="hours" className="mt-6 space-y-4">
                     <div className="rounded-lg bg-primary-foreground/10 p-4">
-                      <h3 className="font-medium text-primary-foreground">
-                        Branch Hours
-                      </h3>
+                      <h3 className="font-medium ">Branch Hours</h3>
                       <div className="grid grid-cols-2 gap-2 text-sm mt-2">
                         <div>Monday - Friday</div>
                         <div>9:00 AM - 5:00 PM</div>
@@ -442,9 +436,7 @@ export default function AboutPage() {
                       </div>
                     </div>
                     <div className="rounded-lg bg-primary-foreground/10 p-4">
-                      <h3 className="font-medium text-primary-foreground">
-                        Customer Support
-                      </h3>
+                      <h3 className="font-medium ">Customer Support</h3>
                       <div className="grid grid-cols-2 gap-2 text-sm mt-2">
                         <div>Monday - Friday</div>
                         <div>8:00 AM - 8:00 PM</div>
@@ -464,8 +456,8 @@ export default function AboutPage() {
       <footer className="w-full border-t bg-background py-6">
         <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">SecureBank</span>
+            <Image src="/logo2.svg" width={50} height={50} alt="CGM" />
+            <span className="text-lg font-bold">CGM Bank</span>
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link
@@ -492,7 +484,7 @@ export default function AboutPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              © 2023 SecureBank. All rights reserved.
+              © 2025 CGM bank. All rights reserved.
             </Link>
           </div>
         </div>

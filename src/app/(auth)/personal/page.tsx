@@ -566,7 +566,7 @@ export default function PersonalPage() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
+        <section className="w-full py-12 md:py-24 bg-primary dark:bg-[#363636] dark:text-white text-primary-foreground">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -599,7 +599,7 @@ export default function PersonalPage() {
         <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">SecureBank</span>
+            <span className="text-lg font-bold">CGM Bank</span>
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link
@@ -626,7 +626,7 @@ export default function PersonalPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              © 2023 SecureBank. All rights reserved.
+              © 2025 CGM bank. All rights reserved.
             </Link>
           </div>
         </div>

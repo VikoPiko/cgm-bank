@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Download, Filter } from "lucide-react";
+import { CalendarIcon, Download, Filter, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -34,8 +34,11 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { generatePDF } from "@/lib/actions/actions";
+import { toast } from "sonner";
+import { useUser } from "@/components/custom/UserContext";
+import { Accounts, Transactions } from "@prisma/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Sample transaction data
 const transactions = [
   {
     id: "1",
@@ -106,10 +109,30 @@ const categories = [
 ];
 
 export default function StatementsPage() {
+  const { user, getTransactions, getAccounts, refreshUser } = useUser();
+  const [transactionz, setTransactions] = useState<Transactions[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [accounts, setAccounts] = useState<Accounts[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchTransactions = async () => {
+        const txs = await getTransactions();
+        const accs = await getAccounts();
+        setTransactions(txs || []);
+        setAccounts(accs || []);
+        // console.log(txs);
+        // console.log(accs);
+        setLoading(false);
+      };
+      fetchTransactions();
+    }
+  }, [user]);
+
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
-    new Date(2023, 2, 1)
+    new Date(2025, 2, 1)
   );
-  const [dateTo, setDateTo] = useState<Date | undefined>(new Date(2023, 2, 31));
+  const [dateTo, setDateTo] = useState<Date | undefined>(new Date(2025, 2, 31));
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
     "All Categories",
   ]);
@@ -142,23 +165,24 @@ export default function StatementsPage() {
     setSelectedCategories(newCategories);
   };
 
-  const filteredTransactions = transactions.filter((transaction) => {
+  const filteredTransactions = transactionz.filter((transaction) => {
     const dateMatches =
       (!dateFrom || transaction.date >= dateFrom) &&
       (!dateTo || transaction.date <= dateTo);
 
-    const categoryMatches =
-      selectedCategories.includes("All Categories") ||
-      selectedCategories.includes(transaction.category);
+    // const categoryMatches =
+    //   selectedCategories.includes("All Categories") ||
+    //   selectedCategories.includes(transaction.category);
 
-    return dateMatches && categoryMatches;
+    // return dateMatches && categoryMatches;
+    return dateMatches;
   });
 
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
-      // In a real app, this would call a server action to generate the PDF
       await generatePDF(filteredTransactions, dateFrom, dateTo);
+      toast.success(`Generated PDF.`);
     } finally {
       setIsGenerating(false);
     }
@@ -177,22 +201,34 @@ export default function StatementsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Account Number</p>
-                <p className="font-medium">**** **** **** 5678</p>
+            {accounts.length > 0 ? (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Account Number
+                  </p>
+                  <p className="font-medium">{accounts[0].mask}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Current Balance
+                  </p>
+                  <p className="text-2xl font-bold">
+                    ${accounts[0].availableBalance.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Available Credit
+                  </p>
+                  <p className="font-medium">
+                    ${accounts[0].currentBalance.toFixed(2)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Current Balance</p>
-                <p className="text-2xl font-bold">$1,243.45</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Available Credit
-                </p>
-                <p className="font-medium">$8,756.55</p>
-              </div>
-            </div>
+            ) : (
+              <p>Loading account information...</p>
+            )}
           </CardContent>
         </Card>
 
@@ -296,6 +332,9 @@ export default function StatementsPage() {
                 )} to ${format(dateTo, "PPP")}`
               : "Showing all transactions"}
           </CardDescription>
+          <Button onClick={refreshUser} className="flex justify-center w-5 h-5">
+            <RefreshCw />
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -310,9 +349,11 @@ export default function StatementsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTransactions.length > 0 ? (
-                  filteredTransactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
+                {/* {filteredTransactions.length > 0 ? (
+                  filteredTransactions.map((transaction) => ( */}
+                {transactionz.length > 0 ? (
+                  transactionz.map((transaction) => (
+                    <TableRow key={transaction.transactionId}>
                       <TableCell>
                         {format(transaction.date, "MMM d, yyyy")}
                       </TableCell>
@@ -330,7 +371,7 @@ export default function StatementsPage() {
                         {Math.abs(transaction.amount).toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
-                        ${transaction.balance.toFixed(2)}
+                        ${transaction.balanceAfter.toFixed(2)}
                       </TableCell>
                     </TableRow>
                   ))
@@ -347,8 +388,7 @@ export default function StatementsPage() {
         </CardContent>
         <CardFooter className="flex justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {filteredTransactions.length} of {transactions.length}{" "}
-            transactions
+            Showing {transactionz.length} of {transactionz.length} transactions
           </p>
         </CardFooter>
       </Card>

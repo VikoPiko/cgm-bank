@@ -17,37 +17,17 @@ import { logout } from "@/lib/actions/actions";
 import type { User } from "@prisma/client";
 import { Edit, LogOut, Save, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import type React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { UserContext } from "@/components/custom/UserContext";
+import { MinimalUser, useUser } from "@/components/custom/UserContext";
 
-const Page = () => {
+const Settings = () => {
   const [userData, setUser] = useState<Partial<User> | null>(null);
-  const userContext = useContext(UserContext);
-  if (!userContext) {
-    // Handle the case where the context is undefined (shouldn't happen if the provider is set up correctly)
-    return <p>Loading user data...</p>;
-  }
-  const { user, refreshUser } = userContext;
+  const { user, refreshUser } = useUser();
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState<Partial<User> | null>(null);
-  // const fetchUser = async () => {
-  //   try {
-  //     const response = await fetch("/api/prisma/users/me");
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setUser(data);
-  //       setFormData(data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching user:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const [formData, setFormData] = useState<Partial<MinimalUser> | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -60,30 +40,41 @@ const Page = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value } as User);
   };
 
-  // const handleEdit = () => {
-  //   if (user) {
-  //     setFormData({ ...user });
-  //     setEditMode(true);
-  //   } else {
-  //     toast.error("User data not available.");
-  //   }
-  // };
+  const handleEdit = () => {
+    if (user) {
+      setFormData({ ...user });
+      setEditMode(true);
+    } else {
+      toast.error("User data not available.");
+    }
+  };
 
   const handleSubmit = async () => {
     try {
+      const {
+        accounts,
+        banks,
+        notifications,
+        transactions,
+        preferences,
+        ...filteredFormData
+      } = formData || {};
+
       const response = await fetch("/api/prisma/users/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(filteredFormData), // Send only the filtered data
       });
+
       if (response.ok) {
         const updatedUser = await response.json();
         setUser(updatedUser);
         setEditMode(false);
+        refreshUser();
         toast.success("Profile updated successfully.");
       } else {
         console.error("Failed to update profile.");
-        toast.success("Failed to update profile.");
+        toast.error("Failed to update profile.");
       }
     } catch (error) {
       console.error("Error updating user:", error);
@@ -316,4 +307,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Settings;

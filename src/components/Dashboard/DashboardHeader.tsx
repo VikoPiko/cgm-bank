@@ -70,7 +70,7 @@ function DashboardHeader({ userId = "" }: { userId?: string }) {
   ];
 
   return (
-    <div className="col-span-12 p-2 sm:p-4 rounded border border-stone-300 shadow-md dark:bg-[#242424] dark:shadow-stone-700 dark:shadow-lg mb-2 sm:mb-3">
+    <div className="col-span-12 p-2 sm:p-4 rounded-lg border border-stone-600 shadow-sm dark:bg-[#242424] dark:shadow-stone-700 dark:shadow-lg mb-2 sm:mb-3">
       {/* Desktop Layout */}
       <div className="hidden sm:flex items-center justify-between">
         {/* Left Side */}

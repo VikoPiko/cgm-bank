@@ -28,7 +28,7 @@ model User {
   accounts       Accounts[]
   loans          Loans[]
   notifications  Notifications[]
-  Transactions   Transactions[]
+  transactions   Transactions[]
   preferences    UserPreferences? // Optional relation with UserPreferences
   createdAt      DateTime         @default(now())
 }
@@ -106,17 +106,17 @@ enum LoanStatus {
 model Transactions {
   transactionId      String          @id @default(uuid())
   userId             String
-  name               String
-  paymentChannel     String
-  transactionType    TransactionType
+  description        String
+  transactionType    TransactionType @default(PAYMENT)
   accountId          String
+  balanceAfter       Float
   amount             Float
   pending            Boolean         @default(false)
   category           String
   date               DateTime        @default(now())
   image              String?
   createdAt          DateTime        @default(now())
-  channel            String
+  channel            String?
   senderBankId       String?
   receiverBankId     String?
   plaidTransactionId String?
@@ -133,8 +133,12 @@ enum TransactionType {
 model Notifications {
   id        String   @id @default(uuid())
   userId    String
+  type      String
   event     String
   message   String
+  icon      String
+  iconBg    String?
+  iconColor String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [userId])

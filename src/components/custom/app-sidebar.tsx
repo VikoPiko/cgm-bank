@@ -22,7 +22,7 @@ import { NavUser } from "@/components/custom/nav-user";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const user = useUser();
+  const { user } = useUser();
   const { t } = useTranslation();
   const [hasMounted, setHasMounted] = useState(false);
 

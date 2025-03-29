@@ -9,9 +9,11 @@ const protectedRoutes = [
   "/dashboard",
   "/settings",
   "/my-banks",
+  "/statements",
 ];
+
 const publicRoutes = ["/login", "/sign-in", "/", "/personal"];
-const adminRoutes = ["/testing", "/actions"];
+const adminRoutes = ["/testing"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -26,7 +28,6 @@ export default async function middleware(req: NextRequest) {
 
   const cookie = (await cookies()).get("session")?.value;
   const session = await decrypt(cookie);
-  // console.log("session: ", session);
 
   if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL("/", req.nextUrl));

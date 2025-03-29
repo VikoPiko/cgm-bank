@@ -8,6 +8,7 @@ import {
   MonitorCog,
   Bell,
   Play,
+  ClipboardList,
 } from "lucide-react";
 
 export const sidebarLinks = [
@@ -18,14 +19,14 @@ export const sidebarLinks = [
     label: "home",
   },
   {
-    icon: Play,
-    route: "/actions",
-    label: "Actions",
-  },
-  {
     icon: Banknote,
     route: "/my-banks",
     label: "myBanks",
+  },
+  {
+    icon: ClipboardList,
+    route: "/statements",
+    label: "Statements",
   },
   // {
   //   icon: History,

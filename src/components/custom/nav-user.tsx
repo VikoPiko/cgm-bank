@@ -38,21 +38,21 @@ export function NavUser({ user }: { user: MinimalUser }) {
   const { isMobile } = useSidebar();
   const { t } = useTranslation();
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/prisma/users/logout", {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        console.log(t("logoutSuccess"));
-        window.location.reload();
-      } else {
-        console.error(t("logoutFailure"));
-      }
-    } catch (error) {
-      console.error(t("logoutError"), error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     const response = await fetch("/api/prisma/users/logout", {
+  //       method: "DELETE",
+  //     });
+  //     if (response.ok) {
+  //       console.log(t("logoutSuccess"));
+  //       window.location.reload();
+  //     } else {
+  //       console.error(t("logoutFailure"));
+  //     }
+  //   } catch (error) {
+  //     console.error(t("logoutError"), error);
+  //   }
+  // };
 
   return (
     <>

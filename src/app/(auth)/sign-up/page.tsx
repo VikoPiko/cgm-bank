@@ -51,7 +51,7 @@ export default function LandingPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Shield className="h-5 w-5 text-primary" />
-                          <span className="font-semibold">SecureBank</span>
+                          <span className="font-semibold">CGM Bank</span>
                         </div>
                         <CreditCard className="h-5 w-5 text-primary" />
                       </div>
@@ -251,7 +251,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="mt-4">
-                  "SecureBank has transformed how I manage my business finances.
+                  "CGM Bank has transformed how I manage my business finances.
                   The real-time notifications and spending insights have helped
                   me make better financial decisions."
                 </div>
@@ -313,7 +313,7 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">SecureBank</span>
+            <span className="text-lg font-bold">CGM Bank</span>
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link
@@ -340,7 +340,7 @@ export default function LandingPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              © 2023 SecureBank. All rights reserved.
+              © 2023 CGM Bank. All rights reserved.
             </Link>
           </div>
         </div>

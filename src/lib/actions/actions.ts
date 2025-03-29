@@ -6,6 +6,8 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createSession } from "../sessions";
+import { toast } from "sonner";
+import { Transactions } from "@prisma/client";
 
 const loginSchema = z.object({
   email: z
@@ -68,17 +70,20 @@ export async function logout() {
   redirect("/login");
 }
 
-type Transaction = {
-  id: string;
-  date: Date;
-  description: string;
-  category: string;
-  amount: number;
-  balance: number;
-};
+// type Transaction = {
+//   id: string;
+//   date: Date;
+//   description: string;
+//   category: string;
+//   amount: number;
+//   balance: number;
+// };
 
 export async function generatePDF(
-  transactions: Transaction[],
+  transactions: Transactions[],
   dateFrom?: Date,
   dateTo?: Date
-) {}
+) {
+  const data = { dateFrom, dateTo, transactions };
+  return data;
+}

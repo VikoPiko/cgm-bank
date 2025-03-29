@@ -41,8 +41,8 @@ export default function FeaturesPage() {
                   Powerful features designed for modern banking
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Discover the innovative tools and services that make
-                  SecureBank the smart choice for your financial needs.
+                  Discover the innovative tools and services that make CGM Bank
+                  the smart choice for your financial needs.
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Link href="/open-account">
@@ -60,7 +60,7 @@ export default function FeaturesPage() {
                   src="/features.jpg"
                   alt="Banking Features"
                   fill
-                  className="object-cover"
+                  className="object-fill"
                 />
               </div>
             </div>
@@ -82,7 +82,7 @@ export default function FeaturesPage() {
             </div>
 
             <div className="mx-auto grid max-w-5xl gap-8 py-12 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg  hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <Smartphone className="h-6 w-6 text-primary" />
@@ -110,7 +110,7 @@ export default function FeaturesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg  hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <CreditCard className="h-6 w-6 text-primary" />
@@ -138,7 +138,7 @@ export default function FeaturesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <BarChart3 className="h-6 w-6 text-primary" />
@@ -166,7 +166,7 @@ export default function FeaturesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <Lock className="h-6 w-6 text-primary" />
@@ -194,7 +194,7 @@ export default function FeaturesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <Wallet className="h-6 w-6 text-primary" />
@@ -222,7 +222,7 @@ export default function FeaturesPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg hover:bg-gray-100 dark:hover:bg-[#484848] hover:translate-y-[-8px] transition-all duration-200 ease-in-out">
                 <CardHeader className="pb-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-2">
                     <Bell className="h-6 w-6 text-primary" />
@@ -335,7 +335,7 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 bg-primary text-primary-foreground">
+        <section className="w-full py-12 md:py-24 bg-primary dark:bg-[#363636] dark:text-white text-primary-foreground">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -343,8 +343,8 @@ export default function FeaturesPage() {
                   Experience the difference
                 </h2>
                 <p className="mx-auto max-w-[700px] md:text-xl">
-                  Join thousands of satisfied customers who have switched to
-                  SecureBank.
+                  Join thousands of satisfied customers who have switched to CGM
+                  Bank.
                 </p>
               </div>
               <div className="mx-auto w-full max-w-sm space-y-2">
@@ -368,7 +368,7 @@ export default function FeaturesPage() {
         <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">SecureBank</span>
+            <span className="text-lg font-bold">CGM Bank</span>
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link
@@ -395,7 +395,7 @@ export default function FeaturesPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              © 2023 SecureBank. All rights reserved.
+              © 2025 CGM bank. All rights reserved.
             </Link>
           </div>
         </div>
