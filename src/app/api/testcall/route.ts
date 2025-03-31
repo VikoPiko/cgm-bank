@@ -21,7 +21,11 @@ export async function GET(req: NextRequest) {
         accounts: true,
         banks: true,
         preferences: true,
-        notifications: true,
+        notifications: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         transactions: {
           orderBy: {
             date: "desc",

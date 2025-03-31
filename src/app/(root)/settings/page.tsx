@@ -175,7 +175,8 @@ export default function Settings() {
 
     const notificationData = {
       userId: user?.userId,
-      type: getEventType(section),
+      // type: getEventType(section),
+      type: section,
       event: `${capitalizeFirstLetter(section)} Changed.`,
       message: `Settings updated, Your ${capitalizeFirstLetter(
         section

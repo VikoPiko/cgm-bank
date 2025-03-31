@@ -23,6 +23,8 @@ export async function POST(request: NextRequest) {
     }
     const accountNumber = await generateAccountNumber();
     const routingNumber = await generateRoutingNumber();
+    const iban = await generateIBAN(accountNumber);
+    const mask = iban.slice(-4);
     const user = await prisma.user.create({
       data: {
         ...data,
@@ -34,12 +36,14 @@ export async function POST(request: NextRequest) {
           create: {
             accountNumber: accountNumber,
             routingNumber: routingNumber,
-            iban: generateIBAN(accountNumber),
+            iban: iban,
             name: "Main Account",
-            mask: "**** **** **** 5167",
+            mask: `**** **** **** ${mask}`,
             officialName: "Primary Checking Account",
           },
         },
+        notifications: {},
+        transactions: {},
       },
     });
     return NextResponse.json(user, { status: 201 });

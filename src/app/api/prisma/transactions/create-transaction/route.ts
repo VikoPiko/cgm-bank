@@ -12,20 +12,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // if (data.amount <= 0 && data.transactionType === "DEPOSIT") {
-    //   return NextResponse.json(
-    //     { error: "Deposit amount must be positive" },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // if (data.amount > 0 && data.transactionType === "WITHDRAW") {
-    //   return NextResponse.json(
-    //     { error: "Withdrawal amount must be negative" },
-    //     { status: 400 }
-    //   );
-    // }
-
     // Create the transaction record
     const transaction = await prisma.transactions.create({
       data: transactionData,

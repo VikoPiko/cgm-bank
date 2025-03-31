@@ -16,23 +16,91 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { useRouter } from "next/navigation";
 
 const Accounts = () => {
   const [account, setAccount] = useState<Accounts[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [balance, setBalance] = useState(0.0);
-  const { user, getAccounts, getBanks, plaidData, getPlaidBanks } = useUser();
+  const { user, getAccounts, getBanks, refreshUser, getPlaidBanks } = useUser();
   const [banks, setBanks] = useState<Banks[]>([]);
   const [plaidAccounts, setPlaidAccounts] = useState<PlaidType[] | null>(null);
+  const [proceed, setProceed] = useState(false);
+
+  const router = useRouter();
 
   const [amount, setAmount] = useState<string>("0.00");
   const [transferAmount, setTransferAmount] = useState<string>("0.00");
   const [routingNumber, setRoutingNumber] = useState("");
+  const [recieverIban, setRecieverIban] = useState("");
+  const [inputType, setInputType] = useState("routing");
+  const [reason, setReason] = useState("Tranfer");
+  const [position, setPosition] = useState("Blink");
 
-  const handleTransfer = () => {
-    toast.success(`Successfully sent $${amount} to Account: ${routingNumber}.`);
-    setOpen(false);
+  const handleTransfer = async () => {
+    try {
+      if (user?.userId && account.length > 0) {
+        const response = await fetch(
+          "/api/prisma/transactions/handle-transfer",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: user.userId,
+              amount: Number(amount),
+              currentBalance: account[0].availableBalance,
+              senderId: account[0].accountNumber,
+              recieverId: routingNumber,
+              senderIban: account[0].iban,
+              recieverIban: recieverIban,
+              pending: true,
+              category: "Transfer",
+              type: "TRANSFER",
+              description: `Transfer from ${user.firstName} ${user.lastName}: ${account[0].iban} to ${routingNumber} successful.`,
+              image: "Send",
+              channel: "Notification",
+              method: inputType,
+              message: reason,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const updatedAccount = [...account];
+          updatedAccount[0].availableBalance -= Number(amount);
+          setAccount(updatedAccount);
+          setProceed(false);
+          setOpen(false);
+          toast.success(
+            `Transfered $${Math.abs(Number(amount))} Successfully.`
+          );
+        } else {
+          toast.error(`Transfer Failed.`);
+        }
+      } else {
+        toast.error("User not found. Please log in.");
+      }
+    } catch (error) {
+      console.error("Error occurred:", error);
+      toast.error("Error occurred while processing the transaction.");
+    }
   };
 
   useEffect(() => {
@@ -43,7 +111,7 @@ const Accounts = () => {
         const plaidAccs = getPlaidBanks();
         setAccount(accs || []);
         setBanks(bks || []);
-        setPlaidAccounts(plaidAccs || null);
+        setPlaidAccounts(plaidAccs || []);
         if (account.length > 0) {
           setBalance(account[0].availableBalance);
         }
@@ -217,9 +285,16 @@ const Accounts = () => {
                   icon: <ArrowUpRight />,
                   action: () => setOpen(true),
                 },
-                { name: "Pay Bills", icon: <DollarSign /> },
+                {
+                  name: "Pay Bills",
+                  icon: <DollarSign />,
+                },
                 { name: "Insights", icon: <BarChart3 /> },
-                { name: "History", icon: <Clock /> },
+                {
+                  name: "History",
+                  icon: <Clock />,
+                  action: () => router.push("/statements"),
+                },
               ].map((action, i) => (
                 <button
                   key={i}
@@ -243,7 +318,7 @@ const Accounts = () => {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium dark:text-white">
+                    <label className="block text-sm font-medium dark:text-white mb-1">
                       Amount
                     </label>
                     <Input
@@ -254,14 +329,81 @@ const Accounts = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium dark:text-white">
-                      Routing Number
+                    {/* Dropdown Selector */}
+                    <label className="block text-sm font-medium dark:text-white mb-1">
+                      Select Account Number Type ("IBAN"/"Routing")
                     </label>
+                    <Select
+                      onValueChange={(value) => setInputType(value)}
+                      defaultValue={inputType}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select input type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="routing">Routing Number</SelectItem>
+                        <SelectItem value="iban">IBAN</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* Conditional Input Field */}
+                    <div className="mt-3">
+                      <label className="block text-sm font-medium dark:text-white mb-1">
+                        {inputType === "routing" ? "Routing Number" : "IBAN"}
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder={`Enter ${
+                          inputType === "routing" ? "routing number" : "IBAN"
+                        }`}
+                        value={
+                          inputType === "routing" ? routingNumber : recieverIban
+                        }
+                        onChange={(e) =>
+                          inputType === "routing"
+                            ? setRoutingNumber(e.target.value)
+                            : setRecieverIban(e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mr-3 text-sm font-medium dark:text-white">
+                      Payment system:
+                    </label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">
+                          {position.toUpperCase()}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-56">
+                        <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup
+                          value={position}
+                          onValueChange={setPosition}
+                        >
+                          <DropdownMenuRadioItem value="blink">
+                            BLINK
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="bisera">
+                            BISERA
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="rings">
+                            RINGS
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <div>
+                    <label>Reason / Message</label>
                     <Input
                       type="text"
-                      placeholder="Enter routing number"
-                      value={routingNumber}
-                      onChange={(e) => setRoutingNumber(e.target.value)}
+                      placeholder="Enter message"
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
                     />
                   </div>
                 </div>
@@ -269,8 +411,25 @@ const Accounts = () => {
                   <Button variant="outline" onClick={() => setOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleTransfer}>Transfer</Button>
+                  <Button onClick={() => setProceed(true)}>Transfer</Button>
                 </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={proceed} onOpenChange={setProceed}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure?</DialogTitle>
+                </DialogHeader>
+                <h3>
+                  Clicking Send will finalize the tranfer. Are you sure you want
+                  to continue?
+                </h3>
+                <h4>Make sure all entered data is correct.</h4>
+                <Button onClick={handleTransfer}>Transfer</Button>
+                <Button variant="outline" onClick={() => setProceed(false)}>
+                  Cancel
+                </Button>
               </DialogContent>
             </Dialog>
 

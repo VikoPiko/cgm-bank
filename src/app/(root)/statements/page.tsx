@@ -340,9 +340,17 @@ export default function StatementsPage() {
                 )} to ${format(dateTo, "PPP")}`
               : "Showing all transactions"}
           </CardDescription>
-          <Button onClick={refreshUser} className="flex justify-center w-5 h-5">
-            <RefreshCw />
-          </Button>
+          <div className="flex flex-1 gap-2">
+            <Button
+              onClick={refreshUser}
+              className="flex justify-center w-7 h-7"
+            >
+              <RefreshCw />
+            </Button>
+            <p className="text-sm font-semibold">
+              refresh user data manually. (when stale)
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -370,12 +378,12 @@ export default function StatementsPage() {
                       <TableCell
                         className={cn(
                           "text-right",
-                          transaction.amount > 0
+                          transaction.transactionType === "DEPOSIT"
                             ? "text-green-600"
                             : "text-red-600"
                         )}
                       >
-                        {transaction.amount > 0 ? "+" : ""}$
+                        {transaction.transactionType === "DEPOSIT" ? "+" : "-"}$
                         {Math.abs(transaction.amount).toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">

@@ -34,6 +34,9 @@ import {
 import { useUser } from "@/components/custom/UserContext";
 import { Notifications } from "@prisma/client";
 import { toast } from "sonner";
+import RelativeTime from "@/components/custom/RelativeTime";
+import { icons } from "lucide-react";
+import moment from "moment";
 
 const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
 
@@ -47,116 +50,6 @@ export default function NotificationsPage() {
       setNotifs(notif);
     }
   }, [user]);
-
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "transaction",
-      title: "Payment Processed",
-      description:
-        "Your payment of $125.00 to Electric Company was processed successfully.",
-      timestamp: "Just now",
-      read: false,
-      icon: <DollarSign className="h-5 w-5" />,
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
-    },
-    {
-      id: 2,
-      type: "security",
-      title: "New Device Login",
-      description:
-        "Your account was accessed from a new device in New York, USA.",
-      timestamp: "2 hours ago",
-      read: false,
-      icon: <Lock className="h-5 w-5" />,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
-    },
-    {
-      id: 3,
-      type: "account",
-      title: "Direct Deposit Received",
-      description:
-        "You received a direct deposit of $3,250.00 from Employer Inc.",
-      timestamp: "Yesterday",
-      read: true,
-      icon: <DollarSign className="h-5 w-5" />,
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
-    },
-    {
-      id: 4,
-      type: "security",
-      title: "Password Changed",
-      description: "Your account password was changed successfully.",
-      timestamp: "2 days ago",
-      read: true,
-      icon: <Lock className="h-5 w-5" />,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
-    },
-    {
-      id: 5,
-      type: "transaction",
-      title: "Large Transaction Alert",
-      description:
-        "A transaction of $850.00 was made using your credit card at Apple Store.",
-      timestamp: "3 days ago",
-      read: true,
-      icon: <AlertTriangle className="h-5 w-5" />,
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
-    },
-    {
-      id: 6,
-      type: "account",
-      title: "Statement Available",
-      description:
-        "Your monthly statement for March 2023 is now available to view.",
-      timestamp: "1 week ago",
-      read: true,
-      icon: <Info className="h-5 w-5" />,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
-    },
-    {
-      id: 7,
-      type: "promotion",
-      title: "New Rewards Available",
-      description:
-        "You've earned 5,000 reward points! Redeem them for cash back or gift cards.",
-      timestamp: "1 week ago",
-      read: true,
-      icon: <Gift className="h-5 w-5" />,
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
-    },
-    {
-      id: 8,
-      type: "security",
-      title: "Security Alert",
-      description:
-        "We noticed a login attempt from an unrecognized location. Please verify it was you.",
-      timestamp: "2 weeks ago",
-      read: true,
-      icon: <AlertTriangle className="h-5 w-5" />,
-      iconBg: "bg-red-100",
-      iconColor: "text-red-600",
-    },
-    {
-      id: 9,
-      type: "security",
-      title: "Security Alert",
-      description:
-        "We noticed a login attempt from an unrecognized location. Please verify it was you.",
-      timestamp: "2 weeks ago",
-      read: true,
-      icon: <AlertTriangle className="h-5 w-5" />,
-      iconBg: "bg-red-100",
-      iconColor: "text-red-600",
-    },
-  ]);
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
@@ -207,7 +100,9 @@ export default function NotificationsPage() {
 
   // Mark all notifications as read
   const markAllAsRead = () => {
-    setNotifs(notifs.map((notification) => ({ ...notification, read: true })));
+    setNotifs(
+      notifs.map((notification) => ({ ...notification, isRead: true }))
+    );
   };
 
   // Clear all notifications
@@ -301,6 +196,8 @@ export default function NotificationsPage() {
                     <ul className="divide-y">
                       {filteredNotifications.map((notification) => {
                         const IconComponent = LucideIcons[notification.icon]; // Access dynamically
+                        const createdAt = new Date(notification.createdAt);
+                        const daysDifference = moment().diff(createdAt, "days");
 
                         return (
                           <li
@@ -332,10 +229,21 @@ export default function NotificationsPage() {
                                   >
                                     {notification.event}
                                   </p>
-                                  <span className="text-xs text-muted-foreground">
+                                  {/* <span className="text-xs text-muted-foreground">
                                     {new Date(
                                       notification.createdAt
                                     ).toLocaleDateString()}
+                                  </span> */}
+                                  <span className="text-xs text-muted-foreground">
+                                    {daysDifference <= 7 ? (
+                                      <RelativeTime
+                                        timestamp={notification.createdAt}
+                                      />
+                                    ) : (
+                                      new Date(
+                                        notification.createdAt
+                                      ).toLocaleDateString()
+                                    )}
                                   </span>
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-1">
