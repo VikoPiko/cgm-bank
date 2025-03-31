@@ -52,9 +52,9 @@ interface UserContextType {
   user: MinimalUser | null;
   plaidData: PlaidType[] | null;
   refreshUser: () => void;
-  getTransactions: () => Transactions[] | undefined;
+  getTransactions: () => Transactions[] | [];
   getPreferences: () => UserPreferences | undefined;
-  getNotifications: () => Notifications[] | undefined;
+  getNotifications: () => Notifications[] | [];
   getAccounts: () => Accounts[] | undefined;
   getBanks: () => Banks[] | undefined;
   getPlaidBanks: () => PlaidType[] | undefined;

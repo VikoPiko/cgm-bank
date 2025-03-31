@@ -166,18 +166,24 @@ export default function StatementsPage() {
   };
 
   const filteredTransactions = transactionz.filter((transaction) => {
+    // Ensure the dates are compared without the time component
+    const transactionDate = new Date(transaction.date).setHours(0, 0, 0, 0);
+    const fromDate = dateFrom ? dateFrom.setHours(0, 0, 0, 0) : null;
+    const toDate = dateTo ? dateTo.setHours(0, 0, 0, 0) : null;
+
+    // Date matches
     const dateMatches =
-      (!dateFrom || transaction.date >= dateFrom) &&
-      (!dateTo || transaction.date <= dateTo);
+      (!fromDate || transactionDate >= fromDate) &&
+      (!toDate || transactionDate <= toDate);
 
-    // const categoryMatches =
-    //   selectedCategories.includes("All Categories") ||
-    //   selectedCategories.includes(transaction.category);
+    // Category matches (when enabled)
+    const categoryMatches =
+      selectedCategories.includes("All Categories") ||
+      selectedCategories.some((cat) => cat === transaction.category);
 
-    // return dateMatches && categoryMatches;
-    return dateMatches;
+    // Return transactions that match both date and category
+    return dateMatches && categoryMatches;
   });
-
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
@@ -207,7 +213,9 @@ export default function StatementsPage() {
                   <p className="text-sm text-muted-foreground">
                     Account Number
                   </p>
-                  <p className="font-medium">{accounts[0].mask}</p>
+                  <p className="font-medium">
+                    **** **** **** {accounts[0].mask}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">
@@ -355,7 +363,7 @@ export default function StatementsPage() {
                   transactionz.map((transaction) => (
                     <TableRow key={transaction.transactionId}>
                       <TableCell>
-                        {format(transaction.date, "MMM d, yyyy")}
+                        {format(transaction.date, "MMM d, yyyy h:mm a")}
                       </TableCell>
                       <TableCell>{transaction.description}</TableCell>
                       <TableCell>{transaction.category}</TableCell>

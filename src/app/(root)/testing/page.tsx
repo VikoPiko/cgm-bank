@@ -6,8 +6,9 @@ import { Accounts, Transactions, TransactionType } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 
 const Page = () => {
-  const { user } = useUser();
+  const { user, getTransactions, getNotifications, getAccounts } = useUser();
   const [transactions, setTransactions] = useState<Transactions[]>([]);
+  const [accounts, setAccounts] = useState<Accounts[]>([]);
   const [newTransaction, setNewTransaction] = useState({
     description: "Desc",
     amount: 0,
@@ -19,25 +20,16 @@ const Page = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      if (user) {
-        try {
-          const response = await fetch(
-            "/api/prisma/transactions/get-transactions"
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setTransactions(data);
-            console.log("Fetched transactions:", data);
-          } else {
-            console.error("Failed to fetch transactions");
-          }
-        } catch (error) {
-          console.error("Error fetching transactions:", error);
-        }
+    if (user) {
+      try {
+        const trans = getTransactions();
+        const accs = getAccounts();
+        setTransactions(trans);
+        setAccounts(accs || []);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
       }
-    };
-    fetchTransactions();
+    }
   }, [user]);
 
   const handleChange = (
@@ -53,11 +45,9 @@ const Page = () => {
   const handleTransaction = async () => {
     setError(null);
 
-    const firstAccount = Array.isArray(user?.accounts)
-      ? user.accounts[0]
-      : null;
-    if (!firstAccount?.availableBalance) {
-      setError("No account balance found.");
+    const firstAccount = accounts[0];
+    if (!firstAccount) {
+      setError("No account found.");
       return;
     }
 
@@ -81,7 +71,7 @@ const Page = () => {
           body: JSON.stringify({
             ...newTransaction,
             userId: user?.userId,
-            accountId: firstAccount.accountNumber, // Using first account's accountNumber
+            accountId: firstAccount.accountNumber,
             date: new Date(),
             pending: false,
             senderBankId: firstAccount.accountNumber,
@@ -95,7 +85,15 @@ const Page = () => {
 
       if (response.ok) {
         const createdTransaction = await response.json();
+
         setTransactions((prev) => [...(prev || []), createdTransaction]);
+        const updatedAccount = {
+          ...firstAccount,
+          availableBalance: newBalance,
+        };
+        setAccounts([updatedAccount, ...accounts.slice(1)]);
+
+        console.log("Updated account data: ", updatedAccount);
         console.log("Transaction created:", createdTransaction);
       } else {
         setError("Failed to create transaction.");
@@ -104,6 +102,7 @@ const Page = () => {
       setError("Error creating transaction: " + error);
     }
   };
+
   return (
     <div className="flex flex-col items-center gap-5 mt-10 min-h-screen">
       <h1>Welcome, {user?.firstName}</h1>

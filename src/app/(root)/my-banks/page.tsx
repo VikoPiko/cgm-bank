@@ -149,7 +149,7 @@ export default function MyBanks() {
         setTimeout(() => {
           setBanks(mockBanks);
           setLoading(false);
-        }, 1000);
+        }, 20);
       } catch (error) {
         console.error("Error fetching banks:", error);
         setLoading(false);

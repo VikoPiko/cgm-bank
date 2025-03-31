@@ -86,7 +86,7 @@ const Accounts = () => {
         if (response.ok) {
           const updatedBalance = await response.json();
           updatedAccount[0].availableBalance = updatedBalance.availableBalance;
-          setAccount(updatedAccount); // Update account state with the new balance
+          setAccount(updatedAccount);
           toast.success(
             `${action} $${Math.abs(transactionAmount)} Successfully.`
           );
@@ -172,13 +172,14 @@ const Accounts = () => {
                 ) : (
                   <>
                     <div className="p-4 border rounded-lg dark:border-stone-700 hover:shadow-md bg-gradient-to-br from-blue-500/30 to-indigo-500/30 hover:from-blue-600/30 hover:to-indigo-600/30 dark:from-blue-900/20 dark:to-indigo-900/20 hover:translate-y-[-5px]  duration-200 transition-all hover:dark:from-blue-900/40 hover:dark:to-indigo-900/40">
-                      <h3 className="text-sm text-stone-700 dark:text-stone-300 mb-1">
+                      <h3 className="text-sm text-stone-700 dark:text-stone-300 mb-0.5">
                         My Account
                       </h3>
-                      <p className="text-xl font-semibold mb-1">
+                      <p className="text-xl font-semibold -mb-[4px]">
                         {account[0]?.availableBalance?.toFixed(2) ||
                           "Loading..."}
                       </p>
+                      <sub className="mb-0.5">IBAN: {account[0]?.iban}</sub>
                       <p className="text-xs text-stone-700 dark:text-stone-300">
                         Primary Account
                       </p>
