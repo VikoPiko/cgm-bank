@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
     }
 
     const accessToken = userData.banks?.[0].accessToken;
+    console.log(accessToken);
     let plaidData = null;
 
     if (accessToken) {
@@ -38,7 +39,9 @@ export async function GET(req: NextRequest) {
         const plaidResponse = await plaidClient.accountsBalanceGet({
           access_token: accessToken,
         });
-        plaidData = plaidResponse.data;
+        plaidData = plaidResponse.data.accounts;
+        // console.log("Plaid accounts:", plaidData.accounts);
+        console.log("Plaid data:", plaidData);
       } catch (error) {
         console.error("Error fetching plaid data", error);
       }

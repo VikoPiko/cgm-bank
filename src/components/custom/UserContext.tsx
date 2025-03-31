@@ -32,32 +32,32 @@ export type MinimalUser = {
   transactions?: Transactions[];
 };
 
-interface PlaidBalance {
-  available: number;
-  current: number;
-  iso_currency_code: string;
-}
-
-interface PlaidAccount {
+export type PlaidType = {
   account_id: string;
+  balances: {
+    available: number;
+    current: number;
+    iso_currency_code: string;
+    limit: number | null;
+  };
+  mask: string;
   name: string;
-  balances: PlaidBalance;
-}
-
-interface PlaidData {
-  accounts: PlaidAccount[];
-}
+  official_name: string;
+  persistent_account_id: string;
+  subtype: string;
+  type: string;
+};
 
 interface UserContextType {
   user: MinimalUser | null;
-  plaidData: PlaidData[] | null;
+  plaidData: PlaidType[] | null;
   refreshUser: () => void;
   getTransactions: () => Transactions[] | undefined;
   getPreferences: () => UserPreferences | undefined;
   getNotifications: () => Notifications[] | undefined;
   getAccounts: () => Accounts[] | undefined;
   getBanks: () => Banks[] | undefined;
-  getPlaidBanks: () => PlaidData[] | undefined;
+  getPlaidBanks: () => PlaidType[] | undefined;
 }
 
 // Create UserContext
@@ -68,7 +68,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<Transactions[]>([]);
   const [preferences, setPreferences] = useState<UserPreferences>();
   const [notifications, setNotifications] = useState<Notifications[]>([]);
-  const [plaidData, setPlaidData] = useState<PlaidData[]>([]);
+  const [plaidData, setPlaidData] = useState<PlaidType[]>([]);
 
   // Fetch user data
   const fetchUser = async () => {

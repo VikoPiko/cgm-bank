@@ -1,35 +1,85 @@
 "use client";
-import React, { useContext } from "react";
-import { UserContext } from "@/components/custom/UserContext"; // Adjust the import based on your file structure
-import { Button } from "@/components/ui/button";
+import { PlaidType, useUser } from "@/components/custom/UserContext";
+import { Accounts, Banks } from "@prisma/client";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-const UserPage = () => {
-  const userContext = useContext(UserContext); // Access the UserContext
+const User = () => {
+  const { user, getAccounts, getBanks, plaidData, getPlaidBanks } = useUser();
+  const [accounts, setAccounts] = useState<Accounts[]>([]);
+  const [banks, setBanks] = useState<Banks[]>([]);
+  const [plaidAccounts, setPlaidAccounts] = useState<PlaidType[] | null>(null);
 
-  if (!userContext) {
-    // Handle the case where the context is undefined (shouldn't happen if the provider is set up correctly)
-    return <p>Loading user data...</p>;
-  }
+  useEffect(() => {
+    if (user) {
+      try {
+        const accs = getAccounts();
+        const bks = getBanks();
+        const plaidAccs = getPlaidBanks();
+        console.log(plaidAccs);
 
-  const { user, refreshUser } = userContext; // Destructure user and refreshUser
+        setAccounts(accs || []);
+        setBanks(bks || []);
+        setPlaidAccounts(plaidAccs || null);
+      } catch (error) {
+        toast.error(`ERROR: ${error}`);
+      }
+    }
+  }, [user, plaidData]);
 
   return (
-    <div className="min-h-screen ml-20 mt-10 flex">
-      {user ? (
-        <div>
-          <h1>
-            Welcome, {user.firstName} {user.lastName[0]}.
-          </h1>
-          <p>Email: {user.email}</p>
-          <Button onClick={refreshUser} className="hover:cursor-pointer">
-            Refresh User Data
-          </Button>
-        </div>
-      ) : (
-        <p>No user found. Please log in.</p>
-      )}
+    <div>
+      {/* Display user accounts */}
+      <div className="border p-4 my-2">
+        {accounts.length > 0 ? (
+          accounts.map((account, index) => (
+            <div key={index}>
+              <h1>Account Number: {account.accountNumber}</h1>
+              <h1>Routing Number: {account.routingNumber}</h1>
+            </div>
+          ))
+        ) : (
+          <h1>No Accounts.</h1>
+        )}
+      </div>
+
+      {/* Display banks */}
+      <div className="border p-4 my-2">
+        {banks.length > 0 ? (
+          banks.map((bank, index) => (
+            <div key={index}>
+              <h1>BankID: {bank.bankId}</h1>
+            </div>
+          ))
+        ) : (
+          <h1>No Banks.</h1>
+        )}
+      </div>
+
+      {/* Display Plaid accounts */}
+      <div>
+        {plaidAccounts && plaidAccounts.length > 0 ? (
+          plaidAccounts.map((account, index) => (
+            <div key={index} className="border p-4 my-2">
+              <h2>Account Name: {account.name}</h2>
+              <p>Account ID: {account.account_id}</p>
+              <p>
+                Available Balance: {account.balances.available}{" "}
+                {account.balances.iso_currency_code}
+              </p>
+              <p>Type: {account.subtype}</p>
+              <p>
+                Current Balance: {account.balances.current}{" "}
+                {account.balances.iso_currency_code}
+              </p>
+            </div>
+          ))
+        ) : (
+          <h1>No Plaid Accounts.</h1>
+        )}
+      </div>
     </div>
   );
 };
 
-export default UserPage;
+export default User;

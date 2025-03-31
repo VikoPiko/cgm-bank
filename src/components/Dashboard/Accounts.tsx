@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { type Accounts, type Banks } from "@prisma/client";
-import { useUser } from "@/components/custom/UserContext";
+import { PlaidType, useUser } from "@/components/custom/UserContext";
 import { toast } from "sonner";
 import { DollarSign, ArrowUpRight, BarChart3, Clock } from "lucide-react";
 import { AccountSkeleton } from "@/components/custom/account-skeleton";
@@ -17,30 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-interface PlaidBalance {
-  available: number;
-  current: number;
-  iso_currency_code: string;
-}
-
-interface PlaidAccount {
-  account_id: string;
-  name: string;
-  balances: PlaidBalance;
-}
-
-interface PlaidData {
-  accounts: PlaidAccount[];
-}
-
 const Accounts = () => {
-  const [account, setAccount] = useState<Accounts[] | null>(null);
+  const [account, setAccount] = useState<Accounts[]>([]);
   const [loading, setLoading] = useState(true);
-  const [banks, setBanks] = useState<Banks[]>([]);
-  const [plaidBanks, setPlaidBanks] = useState<PlaidData[]>([]);
   const [open, setOpen] = useState(false);
   const [balance, setBalance] = useState(0.0);
-  const { user, getAccounts, getBanks, getPlaidBanks } = useUser();
+  const { user, getAccounts, getBanks, plaidData, getPlaidBanks } = useUser();
+  const [banks, setBanks] = useState<Banks[]>([]);
+  const [plaidAccounts, setPlaidAccounts] = useState<PlaidType[] | null>(null);
 
   const [amount, setAmount] = useState<string>("0.00");
   const [transferAmount, setTransferAmount] = useState<string>("0.00");
@@ -53,46 +37,20 @@ const Accounts = () => {
 
   useEffect(() => {
     if (user) {
-      const fetchData = async () => {
-        try {
-          const response = await fetch("/api/prisma/accounts/get-account");
-          if (response.ok) {
-            const data = await response.json();
-            setAccount(data.accounts);
-            setBalance(data.accounts[0]?.availableBalance);
-            setBanks(data.banks);
-
-            const plaidDataPromises = data.banks.map(
-              async (bank: { accessToken: any }) => {
-                if (bank.accessToken) {
-                  const plaidResponse = await fetch("/api/plaid/get-balances", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ accessToken: bank.accessToken }),
-                  });
-
-                  if (plaidResponse.ok) {
-                    return await plaidResponse.json();
-                  }
-                  return null;
-                }
-              }
-            );
-            const allPlaidData = await Promise.all(plaidDataPromises);
-            const validPlaidData = allPlaidData.filter((data) => data != null);
-            setPlaidBanks(validPlaidData);
-          } else {
-            console.error("Error:", response.statusText);
-            toast.error("Failed to load account data");
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-          toast.error("Failed to load account data");
-        } finally {
-          setLoading(false);
+      try {
+        const accs = getAccounts();
+        const bks = getBanks();
+        const plaidAccs = getPlaidBanks();
+        setAccount(accs || []);
+        setBanks(bks || []);
+        setPlaidAccounts(plaidAccs || null);
+        if (account.length > 0) {
+          setBalance(account[0].availableBalance);
         }
-      };
-      fetchData();
+        setLoading(false);
+      } catch (error) {
+        toast.error(`ERROR: ${error}`);
+      }
     }
   }, [user]);
 
@@ -110,8 +68,11 @@ const Accounts = () => {
     action: string
   ) => {
     try {
-      if (user?.userId && balance !== null) {
-        setBalance((prevBalance) => (prevBalance ?? 0) + transactionAmount);
+      if (user?.userId && account.length > 0) {
+        // Update balance in the account state
+        const updatedAccount = [...account];
+        updatedAccount[0].availableBalance += transactionAmount;
+        setAccount(updatedAccount);
 
         const response = await fetch("/api/prisma/accounts/update-account", {
           method: "PUT",
@@ -124,12 +85,12 @@ const Accounts = () => {
 
         if (response.ok) {
           const updatedBalance = await response.json();
-          setBalance(updatedBalance.availableBalance);
+          updatedAccount[0].availableBalance = updatedBalance.availableBalance;
+          setAccount(updatedAccount); // Update account state with the new balance
           toast.success(
             `${action} $${Math.abs(transactionAmount)} Successfully.`
           );
         } else {
-          setBalance((prevBalance) => (prevBalance ?? 0) - transactionAmount);
           toast.error(`${action} Failed.`);
         }
       } else {
@@ -140,18 +101,6 @@ const Accounts = () => {
       toast.error("Error occurred while processing the transaction.");
     }
   };
-
-  const plaidBalance =
-    plaidBanks?.reduce(
-      (total, plaidData) =>
-        total +
-        plaidData.accounts.reduce(
-          (accTotal, plaidAccount) =>
-            accTotal + plaidAccount.balances.available,
-          0
-        ),
-      0
-    ) || 0;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -191,13 +140,14 @@ const Accounts = () => {
               className="border border-gray-300 p-2 rounded-md text-center w-28 h-10"
             />
             <Button
-              onClick={() => handleTransaction(parseFloat(amount), "Deposit")}
+              // onClick={() => handleDeposit(parseFloat(amount), "Deposit")}
+              onClick={() => handleDeposit(parseFloat(amount))}
               disabled={parseFloat(amount) <= 0}
             >
               Deposit
             </Button>
             <Button
-              onClick={() => handleTransaction(-parseFloat(amount), "Withdraw")}
+              onClick={() => handleWithdraw(parseFloat(amount))}
               disabled={parseFloat(amount) <= 0}
             >
               Withdraw
@@ -226,19 +176,19 @@ const Accounts = () => {
                         My Account
                       </h3>
                       <p className="text-xl font-semibold mb-1">
-                        ${balance.toFixed(2)}
+                        {account[0]?.availableBalance?.toFixed(2) ||
+                          "Loading..."}
                       </p>
                       <p className="text-xs text-stone-700 dark:text-stone-300">
                         Primary Account
                       </p>
                     </div>
-                    {plaidBanks?.map((plaidData, index) =>
-                      plaidData.accounts?.map((plaidAccount, accountIndex) => (
-                        <AccountCard
-                          key={`${index}-${accountIndex}`}
-                          account={plaidAccount}
-                        />
+                    {plaidAccounts && plaidAccounts.length > 0 ? (
+                      plaidAccounts.map((account, index) => (
+                        <AccountCard key={index} account={account} />
                       ))
+                    ) : (
+                      <h1>No Plaid Accounts.</h1>
                     )}
                   </>
                 )}
