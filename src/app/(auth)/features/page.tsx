@@ -25,6 +25,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import HeroImage from "@/components/custom/HeroImage";
 
 export default function FeaturesPage() {
   return (
@@ -55,13 +56,8 @@ export default function FeaturesPage() {
                   </Button>
                 </div>
               </div>
-              <div className="relative h-[300px] md:h-[400px] lg:h-[500px] rounded-xl overflow-hidden">
-                <Image
-                  src="/features.jpg"
-                  alt="Banking Features"
-                  fill
-                  className="object-fill"
-                />
+              <div className="h-[300px] md:h-[400px] lg:h-[500px] rounded-xl overflow-hidden">
+                <HeroImage />
               </div>
             </div>
           </div>

@@ -38,23 +38,28 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const accessToken = userData.banks?.[0].accessToken;
-    console.log(accessToken);
-    let plaidData = null;
-
-    if (accessToken) {
-      try {
-        const plaidResponse = await plaidClient.accountsBalanceGet({
-          access_token: accessToken,
-        });
-        plaidData = plaidResponse.data.accounts;
-        // console.log("Plaid accounts:", plaidData.accounts);
-        console.log("Plaid data:", plaidData);
-      } catch (error) {
-        console.error("Error fetching plaid data", error);
+    let plaidData: any[] = []; // Initialize an array to store data for multiple banks
+    for (const bank of userData.banks) {
+      if (bank && bank.accessToken) {
+        // Check that bank is not null and accessToken is available
+        const accessToken = bank.accessToken;
+        try {
+          const plaidResponse = await plaidClient.accountsBalanceGet({
+            access_token: accessToken,
+          });
+          plaidData.push(...plaidResponse.data.accounts); // Append the accounts data to the plaidData array
+        } catch (error) {
+          console.error(
+            `Error fetching Plaid data for bank ${bank.bankId}`,
+            error
+          );
+        }
+      } else {
+        console.warn("Skipping invalid bank or missing accessToken");
       }
     }
-    // console.log(userData, "\n Plaid Data: ", plaidData);
+
+    // Return the user data along with optional Plaid balances (if available)
     return NextResponse.json(
       { userData, plaidBalances: plaidData },
       { status: 200 }

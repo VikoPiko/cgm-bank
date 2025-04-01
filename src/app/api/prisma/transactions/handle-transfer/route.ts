@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
     if (data) {
       let sender = null;
-      let receiver = null;
+      let reciever = null;
       const method = data.method;
       if (method === "routing") {
         sender = await prisma.accounts.findFirst({
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
             accountNumber: data.senderId,
           },
         });
-        receiver = await prisma.accounts.findFirst({
+        reciever = await prisma.accounts.findFirst({
           where: {
             routingNumber: data.recieverId,
           },
@@ -25,14 +25,14 @@ export async function POST(req: NextRequest) {
             iban: data.senderIban,
           },
         });
-        receiver = await prisma.accounts.findFirst({
+        reciever = await prisma.accounts.findFirst({
           where: {
             iban: data.recieverIban,
           },
         });
       }
 
-      if (!sender || !receiver) {
+      if (!sender || !reciever) {
         return NextResponse.json(
           { error: "Sender or receiver account not found" },
           { status: 404 }
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       }
 
       let updatedBalanceSender = sender.availableBalance;
-      let updatedBalanceReceiver = receiver.availableBalance;
+      let updatedBalanceReceiver = reciever.availableBalance;
 
       const transactionSender = await prisma.transactions.create({
         data: {
@@ -57,8 +57,8 @@ export async function POST(req: NextRequest) {
       });
       const transactionReceiver = await prisma.transactions.create({
         data: {
-          userId: receiver.userId,
-          accountId: receiver?.accountNumber as string,
+          userId: reciever.userId,
+          accountId: reciever?.accountNumber as string,
           amount: data.amount,
           transactionType: data.type,
           balanceAfter: updatedBalanceReceiver + data.amount,
@@ -75,8 +75,8 @@ export async function POST(req: NextRequest) {
       });
 
       await prisma.accounts.update({
-        where: { accountNumber: receiver.accountNumber as string },
-        data: { availableBalance: receiver.availableBalance + data.amount },
+        where: { accountNumber: reciever.accountNumber as string },
+        data: { availableBalance: reciever.availableBalance + data.amount },
       });
       await prisma.notifications.createMany({
         data: [
@@ -84,14 +84,14 @@ export async function POST(req: NextRequest) {
             userId: sender.userId,
             type: "transaction",
             event: "Transfer",
-            message: `You sent $${data.amount} to ${receiver.iban} Reason: ${data.message} `,
+            message: `You sent $${data.amount} to ${reciever.iban} Reason: ${data.message} `,
             isRead: false,
             icon: "ArrowUp",
             iconBg: "bg-red-100",
             iconColor: "text-red-600",
           },
           {
-            userId: receiver.userId,
+            userId: reciever.userId,
             type: "transaction",
             event: "Transfer",
             message: `You received $${data.amount} from ${

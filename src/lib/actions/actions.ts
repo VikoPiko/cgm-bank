@@ -3,11 +3,10 @@
 import { z } from "zod";
 import prisma from "../prisma";
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createSession } from "../sessions";
-import { toast } from "sonner";
 import { Transactions } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const loginSchema = z.object({
   email: z
@@ -54,7 +53,7 @@ export async function login(prevState: any, formData: FormData) {
     // Create session if credentials are correct
     const session = await createSession(user.userId, user.role);
     if (session) {
-      return redirect("/dashboard");
+      return NextResponse.redirect("/dashboard");
     }
   } catch (error) {
     console.error("Error during login:", error);
@@ -67,17 +66,8 @@ export async function login(prevState: any, formData: FormData) {
 }
 export async function logout() {
   (await cookies()).delete("session");
-  redirect("/login");
+  return NextResponse.redirect("/login");
 }
-
-// type Transaction = {
-//   id: string;
-//   date: Date;
-//   description: string;
-//   category: string;
-//   amount: number;
-//   balance: number;
-// };
 
 export async function generatePDF(
   transactions: Transactions[],

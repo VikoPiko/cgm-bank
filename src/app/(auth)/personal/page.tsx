@@ -21,6 +21,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VelocityText } from "@/components/custom/velocity-text";
 
 export default function PersonalPage() {
   return (
@@ -63,6 +64,8 @@ export default function PersonalPage() {
             </div>
           </div>
         </section>
+
+        <VelocityText />
 
         <section className="w-full py-12 md:py-24">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">

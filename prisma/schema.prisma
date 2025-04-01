@@ -68,8 +68,8 @@ model Accounts {
   routingNumber    String?
   iban             String?
   switftBIC        String?
-  availableBalance Float       @default(25.00)
-  currentBalance   Float       @default(25.00)
+  availableBalance Float       @default(500.00)
+  currentBalance   Float       @default(500.00)
   mask             String
   name             String
   officialName     String

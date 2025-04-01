@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
+import { useUser } from "./UserContext";
 
 interface PlaidTokenProps {
   publicToken: string;
   userId: string;
   addBankToState: (newBank: any) => void;
 }
+
+const { refreshUser } = useUser();
 
 const PlaidToken: React.FC<PlaidTokenProps> = ({
   publicToken,
@@ -31,13 +34,11 @@ const PlaidToken: React.FC<PlaidTokenProps> = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-
         if (!res.ok) throw new Error("Failed to exchange public token");
 
         const data = await res.json();
         console.log("Bank added:", data.bank);
 
-        // Add the new bank to the state
         addBankToState(data.bank);
       } catch (error) {
         console.error("Error:", error);

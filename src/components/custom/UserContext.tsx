@@ -80,7 +80,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setTransactions(data.userData.transactions);
         setPreferences(data.userData.preferences);
         setNotifications(data.userData.notifications);
-        setPlaidData(data.plaidBalances);
+        setPlaidData(data.plaidBalances || []);
       } else {
         console.error("Failed to fetch user data.");
       }
@@ -98,7 +98,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const getPreferences = () => preferences;
   const getNotifications = () => notifications;
   const getBanks = () => user?.banks;
-  const getPlaidBanks = () => plaidData;
+  const getPlaidBanks = () => (plaidData.length ? plaidData : []);
 
   return (
     <UserContext.Provider

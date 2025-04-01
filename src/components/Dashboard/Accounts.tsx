@@ -41,7 +41,7 @@ const Accounts = () => {
   const [balance, setBalance] = useState(0.0);
   const { user, getAccounts, getBanks, refreshUser, getPlaidBanks } = useUser();
   const [banks, setBanks] = useState<Banks[]>([]);
-  const [plaidAccounts, setPlaidAccounts] = useState<PlaidType[] | null>(null);
+  const [plaidAccounts, setPlaidAccounts] = useState<PlaidType[]>([]);
   const [proceed, setProceed] = useState(false);
 
   const router = useRouter();
@@ -257,7 +257,15 @@ const Accounts = () => {
                         <AccountCard key={index} account={account} />
                       ))
                     ) : (
-                      <h1>No Plaid Accounts.</h1>
+                      <div className="p-4 border rounded-lg dark:border-stone-700 flex flex-col justify-center items-center hover:translate-y-[-5px]  duration-200 transition-all">
+                        <h1>No Plaid Accounts Connected.</h1>
+                        <p className="text-xs">
+                          Tip: To Connect plaid account click on connect bank.
+                        </p>
+                        <p className="text-sm">
+                          username: user_good | password: pass_good
+                        </p>
+                      </div>
                     )}
                   </>
                 )}
@@ -366,6 +374,9 @@ const Accounts = () => {
                         }
                       />
                     </div>
+                    <p className="text-sm">
+                      Sample IBAN number "Viktor" : BG48CGMBANK017492459758
+                    </p>
                   </div>
                   <div>
                     <label className="mr-3 text-sm font-medium dark:text-white">

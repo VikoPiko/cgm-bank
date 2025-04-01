@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
             officialName: "Primary Checking Account",
           },
         },
+        banks: {},
         notifications: {},
         transactions: {},
       },
