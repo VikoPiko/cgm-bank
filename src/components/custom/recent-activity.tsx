@@ -69,7 +69,7 @@ export const RecentActivity = ({
         <h2 className="font-medium">Recent Activity</h2>
       </div>
       <div className="divide-y dark:divide-stone-700">
-        {transactions.map((transaction, i) => {
+        {transactions.slice(0, 5).map((transaction, i) => {
           const IconComponent =
             (transaction.image && LucideIcons[transaction.image]) ||
             Icons.HelpCircle;
@@ -83,7 +83,8 @@ export const RecentActivity = ({
                 <div className="w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center">
                   <IconComponent
                     className={`w-5 h-5 ${
-                      transaction.transactionType === "DEPOSIT"
+                      transaction.transactionType === "DEPOSIT" ||
+                      transaction.transactionDirection === "TO"
                         ? "text-green-600"
                         : "text-red-500"
                     }`}
@@ -98,12 +99,16 @@ export const RecentActivity = ({
               </div>
               <p
                 className={`font-medium ${
-                  transaction.transactionType === "DEPOSIT"
+                  transaction.transactionType === "DEPOSIT" ||
+                  transaction.transactionDirection === "TO"
                     ? "text-green-600"
                     : "text-red-600"
                 }`}
               >
-                {transaction.transactionType === "DEPOSIT" ? "+" : "-"}
+                {transaction.transactionType === "DEPOSIT" ||
+                transaction.transactionDirection === "TO"
+                  ? "+"
+                  : "-"}
                 {transaction.amount.toFixed(2)}
               </p>
             </div>

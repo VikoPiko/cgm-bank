@@ -105,23 +105,24 @@ enum LoanStatus {
 }
 
 model Transactions {
-  transactionId      String          @id @default(uuid())
-  userId             String
-  description        String
-  transactionType    TransactionType @default(PAYMENT)
-  accountId          String
-  balanceAfter       Float
-  amount             Float
-  pending            Boolean         @default(false)
-  category           String
-  date               DateTime        @default(now())
-  image              String?
-  createdAt          DateTime        @default(now())
-  channel            String?
-  senderBankId       String?
-  receiverBankId     String?
-  plaidTransactionId String?
-  user               User            @relation(fields: [userId], references: [userId])
+  transactionId        String               @id @default(uuid())
+  userId               String
+  description          String
+  transactionType      TransactionType      @default(PAYMENT)
+  transactionDirection TransactionDirection @default(FROM)
+  accountId            String
+  balanceAfter         Float
+  amount               Float
+  pending              Boolean              @default(false)
+  category             String
+  date                 DateTime             @default(now())
+  image                String?
+  createdAt            DateTime             @default(now())
+  channel              String?
+  senderBankId         String?
+  receiverBankId       String?
+  plaidTransactionId   String?
+  user                 User                 @relation(fields: [userId], references: [userId])
 }
 
 enum TransactionType {
@@ -129,6 +130,11 @@ enum TransactionType {
   DEPOSIT
   PAYMENT
   TRANSFER
+}
+
+enum TransactionDirection {
+  FROM
+  TO
 }
 
 model Notifications {

@@ -390,13 +390,17 @@ export default function StatementsPage() {
                       <TableCell
                         className={cn(
                           "text-right",
-                          transaction.transactionType === "DEPOSIT"
+                          transaction.transactionType === "DEPOSIT" ||
+                            transaction.transactionDirection === "TO"
                             ? "text-green-600"
                             : "text-red-600"
                         )}
                       >
-                        {transaction.transactionType === "DEPOSIT" ? "+" : "-"}$
-                        {Math.abs(transaction.amount).toFixed(2)}
+                        {transaction.transactionType === "DEPOSIT" ||
+                        transaction.transactionDirection === "TO"
+                          ? "+"
+                          : "-"}
+                        ${Math.abs(transaction.amount).toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
                         ${transaction.balanceAfter.toFixed(2)}

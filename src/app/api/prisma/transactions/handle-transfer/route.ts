@@ -42,15 +42,23 @@ export async function POST(req: NextRequest) {
       let updatedBalanceSender = sender.availableBalance;
       let updatedBalanceReceiver = reciever.availableBalance;
 
+      const senderName = await prisma.user.findFirst({
+        where: { userId: sender.userId },
+      });
+
+      const receiverName = await prisma.user.findFirst({
+        where: { userId: reciever.userId },
+      });
       const transactionSender = await prisma.transactions.create({
         data: {
           userId: data.userId,
           accountId: sender?.accountNumber as string,
           amount: data.amount,
           transactionType: data.type,
+          transactionDirection: "FROM",
           balanceAfter: updatedBalanceSender - data.amount,
           category: data.category,
-          description: data.description,
+          description: `You sent $${data.amount} to ${receiverName}: ${reciever.iban} Reason: ${data.message} `,
           image: data.image,
           channel: data.channel,
         },
@@ -61,9 +69,12 @@ export async function POST(req: NextRequest) {
           accountId: reciever?.accountNumber as string,
           amount: data.amount,
           transactionType: data.type,
+          transactionDirection: "TO",
           balanceAfter: updatedBalanceReceiver + data.amount,
           category: data.category,
-          description: data.description,
+          description: `You received $${data.amount} from ${senderName}:  ${
+            sender.iban || sender.accountNumber
+          } Reason: ${data.message}`,
           image: data.image,
           channel: data.channel,
         },

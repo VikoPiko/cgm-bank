@@ -112,7 +112,6 @@ const Accounts = () => {
   useEffect(() => {
     if (user) {
       const eventSource = new EventSource("/api/server-events/updates");
-
       const plaidAccs = getPlaidBanks();
       const acc = getAccounts();
 
