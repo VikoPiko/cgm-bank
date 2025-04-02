@@ -26,31 +26,16 @@ export const sidebarLinks = [
   {
     icon: ClipboardList,
     route: "/statements",
-    label: "Statements",
+    label: "statements",
   },
-  // {
-  //   icon: History,
-  //   route: "/transaction-history",
-  //   label: "transactionHistory",
-  // },
-  // {
-  //   icon: Send,
-  //   route: "/payment-transfer",
-  //   label: "transferFunds",
-  // },
   {
     icon: Bell,
     route: "/notifications",
-    label: "notificationsRoute",
+    label: "notifications",
   },
   {
     icon: Settings,
     route: "/settings",
     label: "settingsRoute",
-  },
-  {
-    icon: MonitorCog,
-    route: "/testing",
-    label: "testingRoute",
   },
 ];

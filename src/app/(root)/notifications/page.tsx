@@ -42,12 +42,35 @@ const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
 
 export default function NotificationsPage() {
   // Sample notification data
+  // useEffect(() => {
+  //   if (user) {
+  //     const notif = getNotifications() || [];
+  //     setNotifs(notif);
+  //   }
+  // }, [user]);
   const { user, getNotifications } = useUser();
   const [notifs, setNotifs] = useState<Notifications[]>([]);
+
   useEffect(() => {
     if (user) {
-      const notif = getNotifications() || [];
-      setNotifs(notif);
+      const eventSource = new EventSource("/api/server-events/updates");
+
+      const notification = getNotifications();
+      setNotifs(notification);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setNotifs(data.notifications || []);
+      };
+
+      eventSource.onerror = () => {
+        console.error("SSE connection lost");
+        eventSource.close();
+      };
+
+      return () => {
+        eventSource.close();
+      };
     }
   }, [user]);
 

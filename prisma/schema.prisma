@@ -76,6 +76,7 @@ model Accounts {
   accountType      AccountType @default(CHECKING)
   userId           String
   plaidAccountId   String?
+  updatedAt        DateTime    @default(now())
   user             User        @relation(fields: [userId], references: [userId])
 }
 

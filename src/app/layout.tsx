@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import { Toaster } from "sonner";
 import MainHeader from "@/components/custom/landing-header";
+import I18nProvider from "@/components/custom/I18nextProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,14 +38,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="">{children}</main>
-        </ThemeProvider>
+        <I18nProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="">{children}</main>
+          </ThemeProvider>
+        </I18nProvider>
         <Toaster richColors />
       </body>
     </html>

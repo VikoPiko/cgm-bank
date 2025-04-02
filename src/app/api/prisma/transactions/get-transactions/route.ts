@@ -8,19 +8,26 @@ export async function GET(req: NextRequest) {
     if (!cookie) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
-    const session = await decrypt(cookie);
 
+    const session = await decrypt(cookie);
     if (!session?.userId) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
-    const transactionData = await prisma.transactions.findMany({
+
+    const transactionData = await prisma.transactions.groupBy({
+      by: ["category"],
       where: {
-        userId: session?.userId,
+        userId: session.userId,
+      },
+      _sum: {
+        amount: true,
       },
     });
-    console.log(transactionData);
     return NextResponse.json(transactionData, { status: 200 });
   } catch (error) {
-    return NextResponse.json("Failed Fetching", { status: 500 });
+    return NextResponse.json(
+      { error: "Failed Fetching", message: error },
+      { status: 500 }
+    );
   }
 }

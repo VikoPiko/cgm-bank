@@ -36,11 +36,21 @@ export function NotificationsDropdown() {
 
   useEffect(() => {
     if (user) {
-      const fetchNotifs = async () => {
-        const notifs = await getNotifications();
-        setNotifications(notifs);
+      const eventSource = new EventSource("/api/server-events/updates");
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setNotifications(data.mobileNotifications || []);
       };
-      fetchNotifs();
+
+      eventSource.onerror = () => {
+        console.error("SSE connection lost");
+        eventSource.close();
+      };
+
+      return () => {
+        eventSource.close();
+      };
     }
   }, [user]);
 

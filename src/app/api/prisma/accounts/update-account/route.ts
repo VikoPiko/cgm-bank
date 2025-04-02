@@ -22,10 +22,10 @@ export async function PUT(req: NextRequest) {
           data: {
             userId: data.userId,
             accountId: updatedAccount.accountNumber as string,
-            amount: data.amount,
+            amount: Math.abs(data.amount),
             transactionType: type,
             balanceAfter: updatedAccount.availableBalance,
-            category: data.amount > 0 ? "Income" : "Deposit",
+            category: data.amount > 0 ? "Deposit" : "Withdraw",
             description: `${type.charAt(0) + type.slice(1).toLowerCase()} of ${
               data.amount
             }$ successful.`,

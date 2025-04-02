@@ -1,28 +1,31 @@
+"use client";
 import Link from "next/link";
 import { Shield, CreditCard, BarChart3, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MainHeader from "@/components/custom/landing-header";
 import Image from "next/image";
+import { VelocityText } from "@/components/custom/velocity-text";
+import { useTranslation } from "react-i18next";
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   return (
     <div className="flex min-h-screen flex-col">
       <header>
         <MainHeader />
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 -mb-10">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_500px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                    Banking that puts you in control
+                    {t("bankingHeader")}
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Secure, transparent, and designed for the way you live
-                    today. Open an account in minutes.
+                    {t("bankingSubheader")}
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -52,7 +55,12 @@ export default function LandingPage() {
                     <div className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Shield className="h-5 w-5 text-primary" />
+                          <Image
+                            src="/logo2.svg"
+                            width={45}
+                            height={35}
+                            alt="CGM"
+                          />
                           <span className="font-semibold">CGM Bank</span>
                         </div>
                         <CreditCard className="h-5 w-5 text-primary" />
@@ -116,7 +124,10 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
+
+        <VelocityText />
+
+        <section className="w-full py-12 md:py-24 lg:py-32 ">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -285,7 +296,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-primary text-primary-foreground">
+        <section className="w-full py-12 md:py-24 lg:py-32 dark:text-white text-primary-foreground">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -322,7 +333,7 @@ export default function LandingPage() {
       <footer className="w-full border-t bg-background py-6">
         <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
+            <Image src="/logo2.svg" width={45} height={35} alt="CGM" />
             <span className="text-lg font-bold">CGM Bank</span>
           </div>
           <nav className="flex gap-4 sm:gap-6">
@@ -350,7 +361,7 @@ export default function LandingPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              © 2023 CGM Bank. All rights reserved.
+              © 2025 CGM Bank. All rights reserved.
             </Link>
           </div>
         </div>

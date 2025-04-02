@@ -116,16 +116,28 @@ export default function StatementsPage() {
 
   useEffect(() => {
     if (user) {
-      const fetchTransactions = async () => {
-        const txs = await getTransactions();
-        const accs = await getAccounts();
-        setTransactions(txs || []);
-        setAccounts(accs || []);
-        // console.log(txs);
-        // console.log(accs);
-        setLoading(false);
+      const eventSource = new EventSource("/api/server-events/updates");
+
+      const accs = getAccounts();
+      const txs = getTransactions();
+      setAccounts(accs || []);
+      setTransactions(txs || []);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        setAccounts(data.accounts || []);
+        setTransactions(data.transactions || []);
       };
-      fetchTransactions();
+      setLoading(false);
+
+      eventSource.onerror = () => {
+        console.error("SSE connection lost");
+        eventSource.close();
+      };
+
+      return () => {
+        eventSource.close();
+      };
     }
   }, [user]);
 

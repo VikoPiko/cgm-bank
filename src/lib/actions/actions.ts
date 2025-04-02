@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { createSession } from "../sessions";
 import { Transactions } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 
 const loginSchema = z.object({
   email: z
@@ -53,7 +54,9 @@ export async function login(prevState: any, formData: FormData) {
     // Create session if credentials are correct
     const session = await createSession(user.userId, user.role);
     if (session) {
-      return NextResponse.redirect("/dashboard");
+      return NextResponse.redirect(
+        new URL("/dashboard", process.env.NEXT_PUBLIC_BASE_URL)
+      );
     }
   } catch (error) {
     console.error("Error during login:", error);
@@ -66,7 +69,7 @@ export async function login(prevState: any, formData: FormData) {
 }
 export async function logout() {
   (await cookies()).delete("session");
-  return NextResponse.redirect("/login");
+  return NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_BASE_URL));
 }
 
 export async function generatePDF(
