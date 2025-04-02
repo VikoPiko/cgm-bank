@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
           transactionDirection: "FROM",
           balanceAfter: updatedBalanceSender - data.amount,
           category: data.category,
-          description: `You sent $${data.amount} to ${receiverName}: ${reciever.iban} Reason: ${data.message} `,
+          description: `You sent $${data.amount} to ${receiverName?.firstName}: ${reciever.iban} Reason: ${data.message} `,
           image: data.image,
           channel: data.channel,
         },
@@ -72,9 +72,9 @@ export async function POST(req: NextRequest) {
           transactionDirection: "TO",
           balanceAfter: updatedBalanceReceiver + data.amount,
           category: data.category,
-          description: `You received $${data.amount} from ${senderName}:  ${
-            sender.iban || sender.accountNumber
-          } Reason: ${data.message}`,
+          description: `You received $${data.amount} from ${
+            senderName?.firstName
+          }:  ${sender.iban || sender.accountNumber} Reason: ${data.message}`,
           image: data.image,
           channel: data.channel,
         },
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
             userId: sender.userId,
             type: "transaction",
             event: "Transfer",
-            message: `You sent $${data.amount} to ${reciever.iban} Reason: ${data.message} `,
+            message: `You sent $${data.amount} to ${receiverName?.firstName} Reason: ${data.message} `,
             isRead: false,
             icon: "ArrowUp",
             iconBg: "bg-red-100",
@@ -105,9 +105,7 @@ export async function POST(req: NextRequest) {
             userId: reciever.userId,
             type: "transaction",
             event: "Transfer",
-            message: `You received $${data.amount} from ${
-              sender.iban || sender.accountNumber
-            } Reason: ${data.message}`,
+            message: `You received $${data.amount} from ${senderName?.firstName} Reason: ${data.message}`,
             isRead: false,
             icon: "ArrowDown",
             iconBg: "bg-green-100",
