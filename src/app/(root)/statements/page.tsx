@@ -37,66 +37,7 @@ import { generatePDF } from "@/lib/actions/actions";
 import { toast } from "sonner";
 import { useUser } from "@/components/custom/UserContext";
 import { Accounts, Transactions } from "@prisma/client";
-import { Skeleton } from "@/components/ui/skeleton";
-
-const transactions = [
-  {
-    id: "1",
-    date: new Date(2023, 2, 15),
-    description: "Grocery Store",
-    category: "Shopping",
-    amount: -85.32,
-    balance: 1243.45,
-  },
-  {
-    id: "2",
-    date: new Date(2023, 2, 14),
-    description: "Salary Deposit",
-    category: "Income",
-    amount: 2500.0,
-    balance: 1328.77,
-  },
-  {
-    id: "3",
-    date: new Date(2023, 2, 13),
-    description: "Electric Bill",
-    category: "Utilities",
-    amount: -124.56,
-    balance: -1171.23,
-  },
-  {
-    id: "4",
-    date: new Date(2023, 2, 10),
-    description: "Restaurant",
-    category: "Dining",
-    amount: -56.78,
-    balance: -1046.67,
-  },
-  {
-    id: "5",
-    date: new Date(2023, 2, 8),
-    description: "Gas Station",
-    category: "Transportation",
-    amount: -45.23,
-    balance: -989.89,
-  },
-  {
-    id: "6",
-    date: new Date(2023, 2, 5),
-    description: "Online Shopping",
-    category: "Shopping",
-    amount: -123.45,
-    balance: -944.66,
-  },
-  {
-    id: "7",
-    date: new Date(2023, 2, 1),
-    description: "Rent Payment",
-    category: "Housing",
-    amount: -1200.0,
-    balance: -821.21,
-  },
-];
+import AnimatedCounter from "@/components/custom/animated-counter";
 
 const categories = [
   "All Categories",
@@ -108,38 +49,100 @@ const categories = [
   "Housing",
 ];
 
+const fetchExchangeRates = async (currency: string) => {
+  try {
+    const response = await fetch(
+      "https://api.exchangerate-api.com/v4/latest/BGN" // BGN as base
+    );
+    const data = await response.json();
+    return data.rates[currency];
+  } catch (error) {
+    console.error("Error fetching exchange rates", error);
+    return 1; // iff error -> no conversion
+  }
+};
+
 export default function StatementsPage() {
   const { user, getTransactions, getAccounts, refreshUser } = useUser();
   const [transactionz, setTransactions] = useState<Transactions[]>([]);
   const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState<Accounts[]>([]);
 
+  const [selectedCurrency, setSelectedCurrency] = useState("BGN");
+  const [convertedBalance, setConvertedBalance] = useState(0);
+  const [currencySymbol, setCurrencySymbol] = useState("$");
+
   useEffect(() => {
     if (user) {
       const eventSource = new EventSource("/api/server-events/updates");
 
-      const accs = getAccounts();
-      const txs = getTransactions();
-      setAccounts(accs || []);
-      setTransactions(txs || []);
+      const fetchInitialData = async () => {
+        const accs = getAccounts();
+        const txs = getTransactions();
 
+        if (accs && txs) {
+          setAccounts(accs || []);
+          setTransactions(txs || []);
+
+          const rate = await fetchExchangeRates(selectedCurrency);
+          const baseBalance = accs[0].availableBalance;
+          const converted = baseBalance * rate;
+
+          setConvertedBalance(converted);
+        }
+      };
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         setAccounts(data.accounts || []);
         setTransactions(data.transactions || []);
       };
-      setLoading(false);
 
       eventSource.onerror = () => {
         console.error("SSE connection lost");
         eventSource.close();
       };
 
+      setLoading(false);
       return () => {
         eventSource.close();
       };
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!user || accounts.length === 0) return;
+
+    // Update currency symbol
+    switch (selectedCurrency) {
+      case "BGN":
+        setCurrencySymbol("лв.");
+        break;
+      case "USD":
+        setCurrencySymbol("$");
+        break;
+      case "EUR":
+        setCurrencySymbol("€");
+        break;
+      case "GBP":
+        setCurrencySymbol("£");
+        break;
+      case "TRY":
+        setCurrencySymbol("₺");
+        break;
+      default:
+        setCurrencySymbol("лв.");
+    }
+
+    // Update converted balance
+    const updateConversion = async () => {
+      const rate = await fetchExchangeRates(selectedCurrency);
+      const baseBalance = accounts[0]?.availableBalance ?? 0;
+      const converted = baseBalance * rate;
+      setConvertedBalance(converted);
+    };
+
+    updateConversion();
+  }, [selectedCurrency, accounts]); // Runs when currency or account updates
 
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
     new Date(2025, 2, 1)
@@ -229,13 +232,30 @@ export default function StatementsPage() {
                     **** **** **** {accounts[0].mask}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Current Balance
-                  </p>
-                  <p className="text-2xl font-bold">
-                    ${accounts[0].availableBalance.toFixed(2)}
-                  </p>
+                <div className="flex flex-row items-center">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Current Balance
+                    </p>
+                    <AnimatedCounter
+                      currencySymbol={currencySymbol}
+                      amount={convertedBalance}
+                    />
+                  </div>
+                  <div className="ml-5 mt-2">
+                    <select
+                      id="currency"
+                      value={selectedCurrency}
+                      onChange={(e) => setSelectedCurrency(e.target.value)}
+                      className="px-4 py-2 rounded-md border dark:hover:bg-mainAccent transition-all ease-in-out duration-300 dark:hover:text-black"
+                    >
+                      <option value="BGN">лв.</option>
+                      <option value="USD">$</option>
+                      <option value="EUR">€</option>
+                      <option value="GBP">£</option>
+                      <option value="TRY">₺</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">

@@ -35,6 +35,7 @@ import {
 import { useRouter } from "next/navigation";
 import { SpendingBreakdown } from "./SpendingChart";
 import { useTranslation } from "react-i18next";
+import AnimatedCounter from "../custom/animated-counter";
 
 const Accounts = () => {
   const [account, setAccount] = useState<Accounts[]>([]);
@@ -59,6 +60,10 @@ const Accounts = () => {
   const [payeeName, setPayeeName] = useState("");
 
   const [transactions, setTransactions] = useState<Transactions[]>([]);
+
+  const [selectedCurrency, setSelectedCurrency] = useState("BGN");
+  const [convertedBalance, setConvertedBalance] = useState(0);
+  const [currencySymbol, setCurrencySymbol] = useState("$");
 
   const handleTransfer = async () => {
     try {
@@ -109,33 +114,110 @@ const Accounts = () => {
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      const eventSource = new EventSource("/api/server-events/updates");
-      const plaidAccs = getPlaidBanks();
-      const acc = getAccounts();
-
-      setAccount(acc || []);
-
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setAccount(data.accounts || []);
-        // setBanks(data.banks || []);
-        setTransactions(data.transactions || []);
-      };
-      setPlaidAccounts(plaidAccs || []);
-      setLoading(false);
-
-      eventSource.onerror = () => {
-        console.error("SSE connection lost");
-        eventSource.close();
-      };
-
-      return () => {
-        eventSource.close();
-      };
+  const fetchExchangeRates = async (currency: string) => {
+    try {
+      const response = await fetch(
+        "https://api.exchangerate-api.com/v4/latest/BGN" // BGN as base
+      );
+      const data = await response.json();
+      return data.rates[currency];
+    } catch (error) {
+      console.error("Error fetching exchange rates", error);
+      return 1; // iff error -> no conversion
     }
+  };
+
+  // Handles initial load and SSE setup
+  useEffect(() => {
+    if (!user) return;
+
+    const eventSource = new EventSource("/api/server-events/updates");
+
+    const fetchInitialData = async () => {
+      try {
+        const plaidAccs = await getPlaidBanks();
+        const acc = await getAccounts();
+
+        if (acc && acc.length > 0) {
+          setAccount(acc);
+
+          const rate = await fetchExchangeRates(selectedCurrency);
+          const baseBalance = acc[0].availableBalance ?? 0;
+          const converted = baseBalance * rate;
+
+          setConvertedBalance(converted);
+        } else {
+          setAccount([]);
+          setConvertedBalance(0);
+        }
+
+        setPlaidAccounts(plaidAccs || []);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching initial data", err);
+      }
+    };
+
+    // SSE Updates
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.accounts && data.accounts.length > 0) {
+        setAccount(data.accounts);
+        // fetchExchangeRates(selectedCurrency).then((rate) => {
+        //   const converted = data.accounts[0].availableBalance * rate;
+        //   setConvertedBalance(converted);
+        // });
+      }
+
+      setTransactions(data.transactions || []);
+    };
+
+    eventSource.onerror = () => {
+      console.error("SSE connection lost");
+      eventSource.close();
+    };
+
+    fetchInitialData();
+
+    return () => {
+      eventSource.close();
+    };
   }, [user]);
+
+  useEffect(() => {
+    if (!user || account.length === 0) return;
+
+    // Update currency symbol
+    switch (selectedCurrency) {
+      case "BGN":
+        setCurrencySymbol("лв.");
+        break;
+      case "USD":
+        setCurrencySymbol("$");
+        break;
+      case "EUR":
+        setCurrencySymbol("€");
+        break;
+      case "GBP":
+        setCurrencySymbol("£");
+        break;
+      case "TRY":
+        setCurrencySymbol("₺");
+        break;
+      default:
+        setCurrencySymbol("лв.");
+    }
+
+    // Update converted balance
+    const updateConversion = async () => {
+      const rate = await fetchExchangeRates(selectedCurrency);
+      const baseBalance = account[0]?.availableBalance ?? 0;
+      const converted = baseBalance * rate;
+      setConvertedBalance(converted);
+    };
+
+    updateConversion();
+  }, [selectedCurrency, account]); // Runs when currency or account updates
 
   const handleDeposit = async (enteredAmount: number) => {
     await handleTransaction(enteredAmount, "Deposit");
@@ -262,28 +344,52 @@ const Accounts = () => {
             </p>
           </div>
 
-          <div className="gap-2 flex flex-row">
-            <input
-              type="number"
-              step="0.01"
-              value={amount}
-              onChange={handleInputChange}
-              placeholder="Enter amount"
-              className="border border-gray-300 p-2 rounded-md text-center w-28 h-10"
-            />
-            <Button
-              // onClick={() => handleDeposit(parseFloat(amount), "Deposit")}
-              onClick={() => handleDeposit(parseFloat(amount))}
-              disabled={parseFloat(amount) <= 0}
-            >
-              {t("deposit")}
-            </Button>
-            <Button
-              onClick={() => handleWithdraw(parseFloat(amount))}
-              disabled={parseFloat(amount) <= 0}
-            >
-              {t("withdraw")}
-            </Button>
+          <div className="flex flex-row items-center justify-between">
+            <div className="mt-0 flex items-center gap-4 mx-5">
+              <label
+                htmlFor="currency"
+                className="text-gray-700 dark:text-white"
+              >
+                {t("selectCurrency")}
+              </label>
+              <select
+                id="currency"
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="px-4 py-2 rounded-md border dark:hover:bg-mainAccent hover:bg-gray-200 transition-all ease-in-out duration-300 dark:hover:text-black"
+              >
+                <option value="BGN">BGN - Bulgarian Lev</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="TRY">TRY - Turkish Lira</option>
+                {/* Add more currencies as needed */}
+              </select>
+            </div>
+
+            <div className="gap-2 flex flex-row">
+              <input
+                type="number"
+                step="0.01"
+                value={amount}
+                onChange={handleInputChange}
+                placeholder="Enter amount"
+                className="border border-gray-300 p-2 rounded-md text-center w-28 h-10"
+              />
+              <Button
+                // onClick={() => handleDeposit(parseFloat(amount), "Deposit")}
+                onClick={() => handleDeposit(parseFloat(amount))}
+                disabled={parseFloat(amount) <= 0}
+              >
+                {t("deposit")}
+              </Button>
+              <Button
+                onClick={() => handleWithdraw(parseFloat(amount))}
+                disabled={parseFloat(amount) <= 0}
+              >
+                {t("withdraw")}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -293,6 +399,7 @@ const Accounts = () => {
               <h2 className="text-lg font-medium mb-4 dark:text-white">
                 {t("connectedAccounts")}
               </h2>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {loading ? (
                   <>
@@ -307,10 +414,16 @@ const Accounts = () => {
                       <h3 className="text-sm text-stone-700 dark:text-stone-300 mb-0.5">
                         {t("myAccount")}
                       </h3>
-                      <p className="text-xl font-semibold -mb-[4px]">
-                        {account[0]?.availableBalance?.toFixed(2) ||
-                          "Loading..."}
-                      </p>
+                      {/* <p className="text-xl font-semibold -mb-[4px]">
+                        {/* {account[0]?.availableBalance?.toFixed(2) ||
+                          "Loading..."} 
+                      </p> */}
+                      <div>
+                        <AnimatedCounter
+                          amount={convertedBalance}
+                          currencySymbol={currencySymbol}
+                        />
+                      </div>
                       <sub className="mb-0.5">IBAN: {account[0]?.iban}</sub>
                       <p className="text-xs text-stone-700 dark:text-stone-300">
                         Primary Account

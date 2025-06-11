@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
+import { useTranslation } from "react-i18next";
 
 export const RecentActivity = ({
   transactions,
@@ -14,6 +15,7 @@ export const RecentActivity = ({
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
 
+  const { t } = useTranslation();
   useEffect(() => {
     if (user) {
       const eventSource = new EventSource("/api/server-events/updates");
@@ -39,7 +41,7 @@ export const RecentActivity = ({
     return (
       <div className="border rounded-lg dark:border-stone-700 overflow-hidden">
         <div className="p-4 border-b dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-          <h2 className="font-medium text-gray-400">Recent Activity</h2>
+          <h2 className="font-medium text-gray-400">{t("recentActivity")}</h2>
         </div>
         <div className="divide-y dark:divide-stone-700 animate-pulse">
           {/* Skeleton for each transaction */}
@@ -66,14 +68,14 @@ export const RecentActivity = ({
   return (
     <div className="border rounded-lg dark:border-stone-700 overflow-hidden">
       <div className="p-4 border-b dark:border-stone-700 bg-stone-50 dark:bg-stone-800">
-        <h2 className="font-medium">Recent Activity</h2>
+        <h2 className="font-medium">{t("recentActivity")}</h2>
       </div>
       <div className="divide-y dark:divide-stone-700">
         {transactions.slice(0, 5).map((transaction, i) => {
           const IconComponent =
             (transaction.image && LucideIcons[transaction.image]) ||
             Icons.HelpCircle;
-
+          const name = transaction.transactionType.toLowerCase();
           return (
             <div
               key={i}
@@ -91,7 +93,7 @@ export const RecentActivity = ({
                   />
                 </div>
                 <div>
-                  <p className="font-medium text-sm">{transaction.category}</p>
+                  <p className="font-medium text-sm">{t(name)}</p>
                   <p className="text-xs text-stone-500 dark:text-stone-400">
                     {new Date(transaction.createdAt).toLocaleString()}
                   </p>

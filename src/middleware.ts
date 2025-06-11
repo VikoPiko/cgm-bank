@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "./lib/sessions";
-import { useUser } from "./components/custom/UserContext";
 
 const protectedRoutes = [
   "/account",

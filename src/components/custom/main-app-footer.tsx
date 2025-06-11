@@ -34,7 +34,7 @@ const MainFooter = () => {
             href="#"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            © 2023 CGM Bank. All rights reserved.
+            © 2025 CGM Bank. All rights reserved.
           </Link>
         </div>
       </div>

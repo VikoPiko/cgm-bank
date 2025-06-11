@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 import { createSession } from "../sessions";
 import { Transactions } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { redirect } from "next/navigation";
 
 const loginSchema = z.object({
   email: z
@@ -67,6 +66,7 @@ export async function login(prevState: any, formData: FormData) {
     };
   }
 }
+
 export async function logout() {
   (await cookies()).delete("session");
   return NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_BASE_URL));

@@ -7,6 +7,7 @@ import MainHeader from "@/components/custom/landing-header";
 import Image from "next/image";
 import { VelocityText } from "@/components/custom/velocity-text";
 import { useTranslation } from "react-i18next";
+import HeroImage from "@/components/custom/HeroImage";
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -49,76 +50,9 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className="mx-auto flex items-center justify-center">
-                <div className="relative h-[450px] w-[350px] rounded-2xl bg-gradient-to-b from-primary/20 to-primary/10 p-1 shadow-xl">
-                  <div className="absolute inset-0 rounded-2xl bg-white/90 backdrop-blur-sm dark:bg-[#242424]">
-                    <div className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src="/logo2.svg"
-                            width={45}
-                            height={35}
-                            alt="CGM"
-                          />
-                          <span className="font-semibold">CGM Bank</span>
-                        </div>
-                        <CreditCard className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="mt-8 space-y-2">
-                        <div className="h-12 rounded-md bg-muted p-2 dark:bg-[#363636]">
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">
-                              Checking Account
-                            </span>
-                            <span className="font-semibold">$2,458.20</span>
-                          </div>
-                        </div>
-                        <div className="h-12 rounded-md bg-muted p-2 dark:bg-[#363636]">
-                          <div className="flex justify-between">
-                            <span className="text-sm font-medium">
-                              Savings Account
-                            </span>
-                            <span className="font-semibold">$12,750.00</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-8">
-                        <div className="text-sm font-medium">
-                          Recent Transactions
-                        </div>
-                        <div className="mt-2 space-y-2">
-                          {[1, 2, 3, 4].map((i) => (
-                            <div
-                              key={i}
-                              className="flex items-center justify-between rounded-md bg-muted/50 dark:bg-[#121212] p-2"
-                            >
-                              <div className="flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-muted">
-                                  <Image
-                                    src={"/profile.jpg"}
-                                    width={32}
-                                    height={32}
-                                    alt="alt"
-                                    className="rounded-xl"
-                                  />
-                                </div>
-                                <div>
-                                  <div className="text-xs font-medium">
-                                    Merchant Name
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Yesterday
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="text-sm font-medium">-$24.99</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              <div className="mx-auto flex items-center justify-between">
+                <div className="translate-x-[100px] translate-y-[-80px] z-20">
+                  <HeroImage />
                 </div>
               </div>
             </div>
