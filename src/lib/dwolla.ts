@@ -1,5 +1,3 @@
-"use server";
-
 import dwolla from "dwolla-v2";
 
 export const dwollaClient = new dwolla.Client({

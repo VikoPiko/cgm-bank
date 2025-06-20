@@ -71,51 +71,57 @@ export const RecentActivity = ({
         <h2 className="font-medium">{t("recentActivity")}</h2>
       </div>
       <div className="divide-y dark:divide-stone-700">
-        {transactions.slice(0, 5).map((transaction, i) => {
-          const IconComponent =
-            (transaction.image && LucideIcons[transaction.image]) ||
-            Icons.HelpCircle;
-          const name = transaction.transactionType.toLowerCase();
-          return (
-            <div
-              key={i}
-              className="p-3 flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center">
-                  <IconComponent
-                    className={`w-5 h-5 ${
-                      transaction.transactionType === "DEPOSIT" ||
-                      transaction.transactionDirection === "TO"
-                        ? "text-green-600"
-                        : "text-red-500"
-                    }`}
-                  />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">{t(name)}</p>
-                  <p className="text-xs text-stone-500 dark:text-stone-400">
-                    {new Date(transaction.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-              <p
-                className={`font-medium ${
-                  transaction.transactionType === "DEPOSIT" ||
-                  transaction.transactionDirection === "TO"
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+        {transactions.length > 0 ? (
+          transactions.slice(0, 5).map((transaction, i) => {
+            const IconComponent =
+              (transaction.image && LucideIcons[transaction.image]) ||
+              Icons.HelpCircle;
+            const name = transaction.transactionType.toLowerCase();
+            return (
+              <div
+                key={i}
+                className="p-3 flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800"
               >
-                {transaction.transactionType === "DEPOSIT" ||
-                transaction.transactionDirection === "TO"
-                  ? "+"
-                  : "-"}
-                {transaction.amount.toFixed(2)}
-              </p>
-            </div>
-          );
-        })}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center">
+                    <IconComponent
+                      className={`w-5 h-5 ${
+                        transaction.transactionType === "DEPOSIT" ||
+                        transaction.transactionDirection === "TO"
+                          ? "text-green-600"
+                          : "text-red-500"
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{t(name)}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
+                      {new Date(transaction.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <p
+                  className={`font-medium ${
+                    transaction.transactionType === "DEPOSIT" ||
+                    transaction.transactionDirection === "TO"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {transaction.transactionType === "DEPOSIT" ||
+                  transaction.transactionDirection === "TO"
+                    ? "+"
+                    : "-"}
+                  {transaction.amount.toFixed(2)}
+                </p>
+              </div>
+            );
+          })
+        ) : (
+          <div className="p-4 text-center text-sm text-stone-500 dark:text-stone-400">
+            No Recent Transactions
+          </div>
+        )}
       </div>
     </div>
   );

@@ -322,10 +322,12 @@ export default function Settings() {
                   <CardContent className="space-y-6">
                     <div className="flex flex-col sm:flex-row gap-6 items-start">
                       <div className="flex flex-col items-center gap-2">
-                        <Avatar className="h-24 w-24">
+                        <Avatar className="h-24 w-24 select-none">
                           <AvatarImage
                             src={user?.avatar}
                             alt={user?.firstName}
+                            draggable={false}
+                            className="select-none"
                           />
                           <AvatarFallback>
                             {user.firstName[0]}
