@@ -28,11 +28,13 @@ import RelativeTime from "./RelativeTime";
 import moment from "moment";
 import * as Icons from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
 
 export function NotificationsDropdown() {
   const { user, getNotifications } = useUser();
   const [notifications, setNotifications] = useState<Notifications[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
@@ -101,7 +103,7 @@ export function NotificationsDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80" align="end">
         <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Notifications</span>
+          <span>{t("notifications")}</span>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
@@ -110,7 +112,7 @@ export function NotificationsDropdown() {
               onClick={markAllAsRead}
             >
               <CheckCheck className="mr-1 h-3 w-3" />
-              Mark all as read
+              {t("markAllAsRead")}
             </Button>
           )}
         </DropdownMenuLabel>
@@ -119,7 +121,9 @@ export function NotificationsDropdown() {
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-4 text-center">
               <Bell className="h-8 w-8 text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">No notifications</p>
+              <p className="text-sm text-muted-foreground">
+                {t("noNotifications")}
+              </p>
             </div>
           ) : (
             <DropdownMenuGroup>
@@ -187,7 +191,10 @@ export function NotificationsDropdown() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/notifications" className="flex justify-center">
-            <span className="text-xs text-primary">View all notifications</span>
+            {t("notifications")}
+            <span className="text-xs text-primary">
+              {t("viewAllNotifications")}
+            </span>
             <ArrowRight className="ml-1 h-3 w-3 text-primary" />
           </Link>
         </DropdownMenuItem>

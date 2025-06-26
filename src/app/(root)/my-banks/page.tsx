@@ -39,6 +39,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 // Define types for our data structure
 interface BankAccount {
@@ -136,7 +137,7 @@ export default function MyBanks() {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState("user-123"); // In a real app, get this from auth
-
+  const { t } = useTranslation();
   useEffect(() => {
     // Simulate API call to fetch banks
     const fetchBanks = async () => {
@@ -204,34 +205,30 @@ export default function MyBanks() {
         <div className="container mx-auto max-w-7xl px-4 py-6 md:px-6">
           <div className="flex flex-col gap-2 mb-6">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">My Banks</h1>
+              <h1 className="text-2xl font-bold">{t("myBanks")}</h1>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
-                    <span>Add Bank</span>
+                    <span>{t("addBankButton")}</span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add a New Bank</DialogTitle>
-                    <DialogDescription>
-                      Connect a new bank account to manage all your finances in
-                      one place.
-                    </DialogDescription>
+                    <DialogTitle>{t("addBankButton")}</DialogTitle>
+                    <DialogDescription>{t("connectNewBank")}</DialogDescription>
                   </DialogHeader>
                   <div className="py-4">
                     <p className="text-sm text-muted-foreground mb-4">
-                      We use Plaid to securely connect your bank accounts. Your
-                      credentials are never stored on our servers.
+                      {t("weUsePlaid")}
                     </p>
-                    <Button className="w-full">Connect with Plaid</Button>
+                    <Button className="w-full">{t("connectPlaid")}</Button>
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
             <p className="text-muted-foreground">
-              Manage your connected bank accounts and view your balances
+              {t("manageYourConnectedBanks")}
             </p>
           </div>
 
@@ -266,7 +263,9 @@ export default function MyBanks() {
               <div className="rounded-full bg-muted p-6 mb-4">
                 <Shield className="h-10 w-10 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-medium mb-2">No banks connected</h3>
+              <h3 className="text-lg font-medium mb-2">
+                {t("noBanksConnected")}
+              </h3>
               <p className="text-muted-foreground max-w-md mb-6">
                 Connect your bank accounts to see all your finances in one place
                 and get personalized insights.

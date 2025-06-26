@@ -1,8 +1,11 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const MainFooter = () => {
+  const { t } = useTranslation();
   return (
     <footer className="w-full border-t bg-background py-6">
       <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
@@ -14,19 +17,19 @@ const MainFooter = () => {
             href="#"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Terms
+            {t("terms")}
           </Link>
           <Link
             href="#"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Privacy
+            {t("privacy")}
           </Link>
           <Link
             href="#"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            Cookies
+            {t("cookies")}
           </Link>
         </nav>
         <div className="flex items-center gap-4">
@@ -34,7 +37,7 @@ const MainFooter = () => {
             href="#"
             className="text-sm font-medium hover:underline underline-offset-4"
           >
-            © 2025 CGM Bank. All rights reserved.
+            © 2025 CGM Bank. {t("allRightsReserved")}
           </Link>
         </div>
       </div>

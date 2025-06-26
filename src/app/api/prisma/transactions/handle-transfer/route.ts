@@ -39,6 +39,13 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      if (sender.accountNumber === reciever.accountNumber) {
+        return NextResponse.json(
+          { error: "Recipient cannot be the same as sender." },
+          { status: 400 }
+        );
+      }
+
       let updatedBalanceSender = sender.availableBalance;
       let updatedBalanceReceiver = reciever.availableBalance;
 

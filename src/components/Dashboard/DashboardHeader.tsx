@@ -67,6 +67,7 @@ function DashboardHeader({ userId = "" }: { userId?: string }) {
     { code: "en", label: "English" },
     { code: "tr", label: "Türkçe" },
     { code: "bg", label: "Български" },
+    { code: "sp", label: "Espanol" },
   ];
 
   return (

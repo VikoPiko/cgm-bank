@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import MainFooter from "@/components/custom/main-app-footer";
 import { UserProvider } from "@/components/custom/UserContext";
+import { CurrencyProvider } from "@/components/custom/currency-context";
 
 async function getUserDataFromSession() {
   const cookieStore = cookies();
@@ -70,7 +71,7 @@ export default async function RootLayout({
                   <div className="px-8 bg-white dark:bg-[#121212]">
                     <DashboardHeader userId={userId} />
                   </div>
-                  {children}
+                  <CurrencyProvider>{children}</CurrencyProvider>
                 </main>
                 <MainFooter />
               </SidebarInset>

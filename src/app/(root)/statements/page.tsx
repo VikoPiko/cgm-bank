@@ -38,6 +38,8 @@ import { toast } from "sonner";
 import { useUser } from "@/components/custom/UserContext";
 import { Accounts, Transactions } from "@prisma/client";
 import AnimatedCounter from "@/components/custom/animated-counter";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "@/components/custom/currency-context";
 
 const categories = [
   "All Categories",
@@ -68,9 +70,10 @@ export default function StatementsPage() {
   const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState<Accounts[]>([]);
 
-  const [selectedCurrency, setSelectedCurrency] = useState("BGN");
-  const [convertedBalance, setConvertedBalance] = useState(0);
-  const [currencySymbol, setCurrencySymbol] = useState("$");
+  const { convert, currencySymbol, setSelectedCurrency, selectedCurrency } =
+    useCurrency();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
@@ -83,12 +86,6 @@ export default function StatementsPage() {
         if (accs && txs) {
           setAccounts(accs || []);
           setTransactions(txs || []);
-
-          const rate = await fetchExchangeRates(selectedCurrency);
-          const baseBalance = accs[0].availableBalance;
-          const converted = baseBalance * rate;
-
-          setConvertedBalance(converted);
         }
       };
       eventSource.onmessage = (event) => {
@@ -108,41 +105,6 @@ export default function StatementsPage() {
       };
     }
   }, [user]);
-
-  useEffect(() => {
-    if (!user || accounts.length === 0) return;
-
-    // Update currency symbol
-    switch (selectedCurrency) {
-      case "BGN":
-        setCurrencySymbol("лв.");
-        break;
-      case "USD":
-        setCurrencySymbol("$");
-        break;
-      case "EUR":
-        setCurrencySymbol("€");
-        break;
-      case "GBP":
-        setCurrencySymbol("£");
-        break;
-      case "TRY":
-        setCurrencySymbol("₺");
-        break;
-      default:
-        setCurrencySymbol("лв.");
-    }
-
-    // Update converted balance
-    const updateConversion = async () => {
-      const rate = await fetchExchangeRates(selectedCurrency);
-      const baseBalance = accounts[0]?.availableBalance ?? 0;
-      const converted = baseBalance * rate;
-      setConvertedBalance(converted);
-    };
-
-    updateConversion();
-  }, [selectedCurrency, accounts]); // Runs when currency or account updates
 
   const [dateFrom, setDateFrom] = useState<Date | undefined>(
     new Date(2025, 2, 1)
@@ -211,22 +173,20 @@ export default function StatementsPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Account Statements</h1>
+      <h1 className="text-3xl font-bold mb-6">{t("accountStatements")}</h1>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <Card className="w-full md:w-1/3">
           <CardHeader>
-            <CardTitle>Account Summary</CardTitle>
-            <CardDescription>
-              Current balance and account details
-            </CardDescription>
+            <CardTitle>{t("accountSummary")}</CardTitle>
+            <CardDescription>{t("currentBalanceAndDetails")}</CardDescription>
           </CardHeader>
           <CardContent>
             {accounts.length > 0 ? (
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    Account Number
+                    {t("accountNumber")}
                   </p>
                   <p className="font-medium">
                     **** **** **** {accounts[0].mask}
@@ -235,54 +195,55 @@ export default function StatementsPage() {
                 <div className="flex flex-row items-center">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      Current Balance
+                      {t("currentBalance")}
                     </p>
                     <AnimatedCounter
                       currencySymbol={currencySymbol}
-                      amount={convertedBalance}
+                      amount={Number(
+                        convert(accounts[0].availableBalance).toFixed(2)
+                      )}
                     />
                   </div>
                   <div className="ml-5 mt-2">
                     <select
-                      id="currency"
                       value={selectedCurrency}
                       onChange={(e) => setSelectedCurrency(e.target.value)}
-                      className="px-4 py-2 rounded-md border dark:hover:bg-mainAccent transition-all ease-in-out duration-300 dark:hover:text-black"
                     >
-                      <option value="BGN">лв.</option>
-                      <option value="USD">$</option>
-                      <option value="EUR">€</option>
-                      <option value="GBP">£</option>
-                      <option value="TRY">₺</option>
+                      <option value="BGN">BGN</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="TRY">TRY</option>
                     </select>
                   </div>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    Available Credit
+                    {t("availableCredit")}
                   </p>
                   <p className="font-medium">
-                    ${accounts[0].currentBalance.toFixed(2)}
+                    {convert(
+                      Number(accounts[0].currentBalance.toFixed(2))
+                    ).toFixed(2)}
+                    {currencySymbol}
                   </p>
                 </div>
               </div>
             ) : (
-              <p>Loading account information...</p>
+              <p>{t("loadingAccountInformation")}</p>
             )}
           </CardContent>
         </Card>
 
         <Card className="w-full md:w-2/3">
           <CardHeader>
-            <CardTitle>Statement Options</CardTitle>
-            <CardDescription>
-              Filter and download your statements
-            </CardDescription>
+            <CardTitle>{t("statementOptions")}</CardTitle>
+            <CardDescription>{t("filterAndDownload")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <p className="text-sm font-medium">From Date</p>
+                <p className="text-sm font-medium">{t("fromDate")}</p>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -305,7 +266,7 @@ export default function StatementsPage() {
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium">To Date</p>
+                <p className="text-sm font-medium">{t("toDate")}</p>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -328,7 +289,7 @@ export default function StatementsPage() {
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium">Categories</p>
+                <p className="text-sm font-medium">{t("categories")}</p>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="w-full">
@@ -363,14 +324,14 @@ export default function StatementsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
+          <CardTitle>{t("transactionHistory")}</CardTitle>
           <CardDescription>
             {dateFrom && dateTo
-              ? `Showing transactions from ${format(
-                  dateFrom,
-                  "PPP"
-                )} to ${format(dateTo, "PPP")}`
-              : "Showing all transactions"}
+              ? t("showingTransactionsFrom", {
+                  from: format(dateFrom, "PPP"),
+                  to: format(dateTo, "PPP"),
+                })
+              : t("showingAllTransactions")}
           </CardDescription>
           <div className="flex flex-1 gap-2">
             <Button
@@ -379,9 +340,7 @@ export default function StatementsPage() {
             >
               <RefreshCw />
             </Button>
-            <p className="text-sm font-semibold">
-              refresh user data manually. (when stale)
-            </p>
+            <p className="text-sm font-semibold">{t("refreshUserData")}</p>
           </div>
         </CardHeader>
         <CardContent>
@@ -389,11 +348,11 @@ export default function StatementsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead>{t("date")}</TableHead>
+                  <TableHead>{t("description")}</TableHead>
+                  <TableHead>{t("category")}</TableHead>
+                  <TableHead className="text-right">{t("amount")}</TableHead>
+                  <TableHead className="text-right">{t("balance")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -430,7 +389,7 @@ export default function StatementsPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
-                      No transactions found for the selected filters.
+                      {t("noTransactionsFound")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -440,7 +399,10 @@ export default function StatementsPage() {
         </CardContent>
         <CardFooter className="flex justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {transactionz.length} of {transactionz.length} transactions
+            {t("showingTransactionsOf", {
+              filter: transactionz.length,
+              total: transactionz.length,
+            })}
           </p>
         </CardFooter>
       </Card>

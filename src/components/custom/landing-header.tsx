@@ -20,16 +20,17 @@ const MainHeader = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { t } = useTranslation();
   const navLinks = [
-    { href: "/personal", label: "Personal" },
-    { href: "/business", label: "Business" },
-    { href: "/features", label: "Features" },
-    { href: "/about", label: "About" },
+    { href: "/personal", label: t("personal") },
+    { href: "/business", label: t("business") },
+    { href: "/features", label: t("features") },
+    { href: "/about", label: t("about") },
   ];
 
   const languages = [
     { code: "en", label: "English" },
     { code: "tr", label: "Türkçe" },
     { code: "bg", label: "Български" },
+    { code: "sp", label: "Espanol" },
   ];
 
   return (
@@ -64,7 +65,7 @@ const MainHeader = () => {
             href="/login"
             className="text-sm font-medium text-muted-foreground hover:text-primary"
           >
-            Log in
+            {t("login")}
           </Link>
 
           <Link href="/open-account" className="hidden md:block">
@@ -73,7 +74,7 @@ const MainHeader = () => {
               variant="default"
               className="hover:cursor-pointer"
             >
-              Open Account
+              {t("openAccount")}
             </Button>
           </Link>
 
@@ -111,9 +112,9 @@ const MainHeader = () => {
           {/* Dark Mode Toggle */}
           <div className="flex items-center gap-1 space-x-2">
             <ModeToggle />
-            <span className="text-sm select-none hidden lg:block text-black dark:text-white">
-              Theme
-            </span>
+            {/* <span className="text-sm select-none hidden lg:block text-black dark:text-white">
+              {t("theme")}
+            </span> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

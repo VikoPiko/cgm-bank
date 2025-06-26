@@ -7,10 +7,12 @@ import {
   useSpring,
 } from "framer-motion";
 import React, { useRef } from "react";
+import i18n from "@/lib/i18n/i18n";
+import { useTranslation } from "react-i18next";
 
 export const VelocityText = () => {
   const targetRef = useRef(null);
-
+  const { t } = useTranslation();
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end start"],
@@ -29,6 +31,8 @@ export const VelocityText = () => {
   const xRaw = useTransform(scrollYProgress, [0, 1], [100, -5500]);
   const x = useSpring(xRaw, { mass: 3, stiffness: 400, damping: 50 });
 
+  // slogan = t()
+
   return (
     <section
       ref={targetRef}
@@ -39,8 +43,7 @@ export const VelocityText = () => {
           style={{ skewX, x }}
           className="origin-bottom-left whitespace-nowrap text-5xl font-black uppercase leading-[0.85] md:text-7xl md:leading-[0.85]"
         >
-          "Trust at its finest. CGM Bank—where security, innovation, and
-          customer-first service come together."
+          {`" ${t("trustSlogan")} "`}
         </motion.p>
       </div>
     </section>

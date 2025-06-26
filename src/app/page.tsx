@@ -8,6 +8,7 @@ import Image from "next/image";
 import { VelocityText } from "@/components/custom/velocity-text";
 import { useTranslation } from "react-i18next";
 import HeroImage from "@/components/custom/HeroImage";
+import { Maname } from "next/font/google";
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -32,21 +33,21 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Link href="/open-account">
                     <Button size="lg" className="h-12">
-                      Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                      {t("getStarted")} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                   <Button size="lg" variant="outline" className="h-12">
-                    Learn More
+                    {t("learnMore")}
                   </Button>
                 </div>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center gap-1">
                     <Lock className="h-4 w-4" />
-                    <span>Bank-level security</span>
+                    <span>{t("bankLevelSecurity")}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Shield className="h-4 w-4" />
-                    <span>FDIC Insured</span>
+                    <span>{t("fdicInsured")}</span>
                   </div>
                 </div>
               </div>
@@ -66,11 +67,10 @@ export default function LandingPage() {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Banking for the modern world
+                  {t("bankingModernWorld")}
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Experience a new standard in banking with features designed to
-                  make your financial life easier.
+                  {t("bankingModernSlogan")}
                 </p>
               </div>
             </div>
@@ -79,30 +79,27 @@ export default function LandingPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <CreditCard className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mt-4 text-xl font-bold">Smart Cards</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Virtual and physical cards with advanced controls and
-                  real-time notifications.
-                </p>
+                <h3 className="mt-4 text-xl font-bold">{t("smartCards")}</h3>
+                <p className="mt-2 text-muted-foreground">{t("smartText")}</p>
               </div>
               <div className="rounded-lg border bg-background p-6 shadow-sm">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mt-4 text-xl font-bold">Financial Insights</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Powerful analytics to help you understand and optimize your
-                  spending habits.
-                </p>
+                <h3 className="mt-4 text-xl font-bold">
+                  {t("financialInsight")}
+                </h3>
+                <p className="mt-2 text-muted-foreground">{t("financeText")}</p>
               </div>
               <div className="rounded-lg border bg-background p-6 shadow-sm">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <Lock className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mt-4 text-xl font-bold">Enhanced Security</h3>
+                <h3 className="mt-4 text-xl font-bold">
+                  {t("enhancedSecurity")}
+                </h3>
                 <p className="mt-2 text-muted-foreground">
-                  Advanced encryption and biometric authentication to keep your
-                  money safe.
+                  {t("securityText")}
                 </p>
               </div>
               <div className="rounded-lg border bg-background p-6 shadow-sm">
@@ -123,11 +120,8 @@ export default function LandingPage() {
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-xl font-bold">Smart Savings</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Automated savings tools and competitive interest rates to help
-                  your money grow.
-                </p>
+                <h3 className="mt-4 text-xl font-bold">{t("smartSavings")}</h3>
+                <p className="mt-2 text-muted-foreground">{t("savingsText")}</p>
               </div>
               <div className="rounded-lg border bg-background p-6 shadow-sm">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -148,11 +142,10 @@ export default function LandingPage() {
                     <path d="m20 22-5-5" />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-xl font-bold">Instant Transfers</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Send and receive money instantly, with no hidden fees or
-                  waiting periods.
-                </p>
+                <h3 className="mt-4 text-xl font-bold">
+                  {t("instantTransfers")}
+                </h3>
+                <p className="mt-2 text-muted-foreground">{t("instantText")}</p>
               </div>
               <div className="rounded-lg border bg-background p-6 shadow-sm">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -174,11 +167,8 @@ export default function LandingPage() {
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-xl font-bold">24/7 Support</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Access to real human support whenever you need it, through
-                  multiple channels.
-                </p>
+                <h3 className="mt-4 text-xl font-bold">{t("24support")}</h3>
+                <p className="mt-2 text-muted-foreground">{t("supportText")}</p>
               </div>
             </div>
           </div>
@@ -187,59 +177,63 @@ export default function LandingPage() {
           <div className="container mx-auto max-w-7xl grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                Join thousands of satisfied customers
+                {t("joinText")}
               </h2>
               <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our customers love the simplicity, security, and smart features
-                that make banking with us a pleasure.
+                {t("joinSlogan")}
               </p>
             </div>
             <div className="flex flex-col items-start gap-4">
               <div className="rounded-lg bg-muted p-6">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10"></div>
+                  <div className="relative h-10 w-10 rounded-full overflow-hidden bg-primary/10">
+                    <Image
+                      src="/woman.jpeg"
+                      alt="Avatar"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                   <div>
-                    <div className="font-semibold">Sarah Johnson</div>
+                    <div className="font-semibold">{t("name1")}</div>
                     <div className="text-sm text-muted-foreground">
-                      Small Business Owner
+                      {t("title1")}
                     </div>
                   </div>
                 </div>
-                <div className="mt-4">
-                  "CGM Bank has transformed how I manage my business finances.
-                  The real-time notifications and spending insights have helped
-                  me make better financial decisions."
-                </div>
+                <div className="mt-4">{t("title1Text")}</div>
               </div>
               <div className="rounded-lg bg-muted p-6">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10"></div>
+                  <div className="relative h-10 w-10 rounded-full overflow-hidden bg-primary/10">
+                    <Image
+                      src="/man.jpg"
+                      alt="Avatar"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                   <div>
-                    <div className="font-semibold">Michael Chen</div>
+                    <div className="font-semibold">{t("name2")}</div>
                     <div className="text-sm text-muted-foreground">
-                      Freelance Designer
+                      {t("title2")}
                     </div>
                   </div>
                 </div>
-                <div className="mt-4">
-                  "The instant transfers and zero fees have been a game-changer
-                  for my freelance business. I can now get paid immediately
-                  without losing a percentage to processing fees."
-                </div>
+                <div className="mt-4">{t("title2Text")}</div>
               </div>
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 dark:text-white text-primary-foreground">
+        <section className="w-full py-12 md:py-24 lg:py-32 dark:text-white text-black">
           <div className="container mx-auto max-w-7xl px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Ready to get started?
+                  {t("readyToStart")}
                 </h2>
                 <p className="mx-auto max-w-[700px] md:text-xl">
-                  Open an account in minutes and experience banking designed for
-                  the modern world.
+                  {t("readyToStartSlogan1")}
                 </p>
               </div>
               <div className="mx-auto w-full max-w-sm space-y-2">
@@ -250,13 +244,13 @@ export default function LandingPage() {
                     className="max-w-lg flex-1 bg-primary-foreground text-primary"
                   />
                   <Button type="submit" variant="secondary">
-                    Get Started
+                    {t("getStarted")}
                   </Button>
                 </form>
                 <p className="text-xs">
-                  By signing up, you agree to our{" "}
+                  {t("readyToStartSlogan2")}
                   <Link href="#" className="underline underline-offset-2">
-                    Terms & Conditions
+                    {t("termsAndConditions")}
                   </Link>
                 </p>
               </div>
@@ -275,19 +269,19 @@ export default function LandingPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              Terms
+              {t("terms")}
             </Link>
             <Link
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              Privacy
+              {t("privacy")}
             </Link>
             <Link
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              Cookies
+              {t("cookies")}
             </Link>
           </nav>
           <div className="flex items-center gap-4">

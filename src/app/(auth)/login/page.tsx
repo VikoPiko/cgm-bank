@@ -16,22 +16,28 @@ import {
 } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 import { login } from "@/lib/actions/actions";
+import { useTranslation } from "react-i18next";
 
 const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
   const router = useRouter();
   const [showRegister, setShowRegister] = useState(false);
   const [formErrors, setFormErrors] = useState<any>({});
+  const { t } = useTranslation();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const formData = new FormData(event.target as HTMLFormElement);
-    const result = await login({}, formData); // Call login with the form data
+    const result = await login({}, formData);
 
-    if (result?.errors) {
+    if ("errors" in result) {
       setFormErrors(result.errors);
+      return;
     }
-    window.location.reload();
+
+    if ("redirect" in result) {
+      window.location.href = result.redirect;
+    }
   };
 
   return (
@@ -48,7 +54,7 @@ const LoginBox = ({ onButtonClick }: { onButtonClick: () => void }) => {
             <Card className="backdrop-blur-md bg-white/90 dark:bg-gray-900/90 shadow-xl border-0">
               <CardHeader className="space-y-1">
                 <CardTitle className="text-2xl font-bold text-center dark:text-white">
-                  Welcome back
+                  {t("welcomeMessage")}
                 </CardTitle>
                 <p className="text-muted-foreground text-center text-sm dark:text-gray-400">
                   Enter your credentials to sign in

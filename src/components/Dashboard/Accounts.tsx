@@ -36,6 +36,7 @@ import { useRouter } from "next/navigation";
 import { SpendingBreakdown } from "./SpendingChart";
 import { useTranslation } from "react-i18next";
 import AnimatedCounter from "../custom/animated-counter";
+import { useCurrency } from "../custom/currency-context";
 
 const Accounts = () => {
   const [account, setAccount] = useState<Accounts[]>([]);
@@ -61,13 +62,21 @@ const Accounts = () => {
 
   const [transactions, setTransactions] = useState<Transactions[]>([]);
 
-  const [selectedCurrency, setSelectedCurrency] = useState("BGN");
+  // const [selectedCurrency, setSelectedCurrency] = useState("BGN");
+  const { selectedCurrency, setSelectedCurrency } = useCurrency();
   const [convertedBalance, setConvertedBalance] = useState(0);
-  const [currencySymbol, setCurrencySymbol] = useState("$");
+  // const [currencySymbol, setCurrencySymbol] = useState("$");
+
+  // const { setCurrencySymbol } = useCurrency();
+  const { convert, currencySymbol } = useCurrency();
 
   const handleTransfer = async () => {
     try {
       if (user?.userId && account.length > 0) {
+        if (account[0].iban === recieverIban) {
+          toast.error("Sender and receiver IBANs cannot be the same.");
+          return;
+        }
         const response = await fetch(
           "/api/prisma/transactions/handle-transfer",
           {
@@ -143,7 +152,7 @@ const Accounts = () => {
 
           const rate = await fetchExchangeRates(selectedCurrency);
           const baseBalance = acc[0].availableBalance ?? 0;
-          const converted = baseBalance * rate;
+          const converted = convert(baseBalance);
 
           setConvertedBalance(converted);
         } else {
@@ -161,13 +170,14 @@ const Accounts = () => {
     // SSE Updates
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      // console.log("SSE received data:", data);
       if (data.accounts && data.accounts.length > 0) {
         setAccount(data.accounts);
-        // fetchExchangeRates(selectedCurrency).then((rate) => {
-        //   const converted = data.accounts[0].availableBalance * rate;
-        //   setConvertedBalance(converted);
-        // });
       }
+
+      // if (data.plaidBanks && data.plaidBanks.length > 0) {
+      //   setPlaidAccounts(data.plaidBanks);
+      // }
 
       setTransactions(data.transactions || []);
     };
@@ -184,40 +194,38 @@ const Accounts = () => {
     };
   }, [user]);
 
-  useEffect(() => {
-    if (!user || account.length === 0) return;
+  // useEffect(() => {
+  //   if (!user || account.length === 0) return;
 
-    // Update currency symbol
-    switch (selectedCurrency) {
-      case "BGN":
-        setCurrencySymbol("лв.");
-        break;
-      case "USD":
-        setCurrencySymbol("$");
-        break;
-      case "EUR":
-        setCurrencySymbol("€");
-        break;
-      case "GBP":
-        setCurrencySymbol("£");
-        break;
-      case "TRY":
-        setCurrencySymbol("₺");
-        break;
-      default:
-        setCurrencySymbol("лв.");
-    }
+  //   switch (selectedCurrency) {
+  //     case "BGN":
+  //       setCurrencySymbol("лв.");
+  //       break;
+  //     case "USD":
+  //       setCurrencySymbol("$");
+  //       break;
+  //     case "EUR":
+  //       setCurrencySymbol("€");
+  //       break;
+  //     case "GBP":
+  //       setCurrencySymbol("£");
+  //       break;
+  //     case "TRY":
+  //       setCurrencySymbol("₺");
+  //       break;
+  //     default:
+  //       setCurrencySymbol("лв.");
+  //   }
 
-    // Update converted balance
-    const updateConversion = async () => {
-      const rate = await fetchExchangeRates(selectedCurrency);
-      const baseBalance = account[0]?.availableBalance ?? 0;
-      const converted = baseBalance * rate;
-      setConvertedBalance(converted);
-    };
+  //   const updateConversion = async () => {
+  //     const rate = await fetchExchangeRates(selectedCurrency);
+  //     const baseBalance = account[0]?.availableBalance ?? 0;
+  //     const converted = baseBalance * rate;
+  //     setConvertedBalance(converted);
+  //   };
 
-    updateConversion();
-  }, [selectedCurrency, account]); // Runs when currency or account updates
+  //   updateConversion();
+  // }, [selectedCurrency, account]);
 
   const handleDeposit = async (enteredAmount: number) => {
     await handleTransaction(enteredAmount, "Deposit");
@@ -255,6 +263,7 @@ const Accounts = () => {
           toast.success(
             `${action} $${Math.abs(transactionAmount)} Successfully.`
           );
+          setAmount("");
         } else {
           toast.error(`${action} Failed.`);
         }
@@ -268,7 +277,9 @@ const Accounts = () => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value;
+    value = value.replace(",", ".");
+
     if (/^\d*\.?\d*$/.test(value)) {
       setAmount(value);
     }
@@ -282,6 +293,10 @@ const Accounts = () => {
   const handlePayment = async () => {
     try {
       if (user?.userId && account.length > 0) {
+        if (account[0].iban === recieverIban) {
+          toast.error("Sender and receiver IBANs cannot be the same.");
+          return;
+        }
         const response = await fetch(
           "/api/prisma/transactions/handle-transfer",
           {
@@ -352,7 +367,7 @@ const Accounts = () => {
               >
                 {t("selectCurrency")}
               </label>
-              <select
+              {/* <select
                 id="currency"
                 value={selectedCurrency}
                 onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -363,14 +378,24 @@ const Accounts = () => {
                 <option value="EUR">EUR - Euro</option>
                 <option value="GBP">GBP - British Pound</option>
                 <option value="TRY">TRY - Turkish Lira</option>
-                {/* Add more currencies as needed */}
+              </select> */}
+
+              <select
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+              >
+                <option value="BGN">BGN</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="TRY">TRY</option>
               </select>
             </div>
 
             <div className="gap-2 flex flex-row">
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={amount}
                 onChange={handleInputChange}
                 placeholder="Enter amount"
@@ -378,14 +403,18 @@ const Accounts = () => {
               />
               <Button
                 // onClick={() => handleDeposit(parseFloat(amount), "Deposit")}
-                onClick={() => handleDeposit(parseFloat(amount))}
-                disabled={parseFloat(amount) <= 0}
+                onClick={() =>
+                  handleDeposit(parseFloat(amount.replace(",", ".")))
+                }
+                disabled={parseFloat(amount.replace(",", ".")) <= 0}
               >
                 {t("deposit")}
               </Button>
               <Button
-                onClick={() => handleWithdraw(parseFloat(amount))}
-                disabled={parseFloat(amount) <= 0}
+                onClick={() =>
+                  handleWithdraw(parseFloat(amount.replace(",", ".")))
+                }
+                disabled={parseFloat(amount.replace(",", ".")) <= 0}
               >
                 {t("withdraw")}
               </Button>
@@ -420,28 +449,26 @@ const Accounts = () => {
                       </p> */}
                       <div>
                         <AnimatedCounter
-                          amount={convertedBalance}
+                          amount={convert(convertedBalance)}
                           currencySymbol={currencySymbol}
                         />
                       </div>
                       <sub className="mb-0.5">IBAN: {account[0]?.iban}</sub>
                       <p className="text-xs text-stone-700 dark:text-stone-300">
-                        Primary Account
+                        {t("primaryAccount")}
                       </p>
                     </div>
                     {plaidAccounts && plaidAccounts.length > 0 ? (
-                      plaidAccounts.map((account, index) => (
-                        <AccountCard key={index} account={account} />
-                      ))
+                      plaidAccounts
+                        .filter((account) => account.balances !== undefined)
+                        .map((account, index) => (
+                          <AccountCard key={index} account={account} />
+                        ))
                     ) : (
                       <div className="p-4 border rounded-lg dark:border-stone-700 flex flex-col justify-center items-center hover:translate-y-[-5px]  duration-200 transition-all">
-                        <h1>No Plaid Accounts Connected.</h1>
-                        <p className="text-xs">
-                          Tip: To Connect plaid account click on connect bank.
-                        </p>
-                        <p className="text-sm">
-                          username: user_good | password: pass_good
-                        </p>
+                        <h1>{t("noPlaidConnected")}</h1>
+                        <p className="text-xs">{t("plaidTip")}</p>
+                        <p className="text-sm">{t("samplePlaidData")}</p>
                       </div>
                     )}
                   </>
@@ -608,14 +635,11 @@ const Accounts = () => {
             <Dialog open={proceed} onOpenChange={setProceed}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Are you sure?</DialogTitle>
+                  <DialogTitle>{t("areYouSure")}</DialogTitle>
                 </DialogHeader>
-                <h3>
-                  Clicking Send will finalize the tranfer. Are you sure you want
-                  to continue?
-                </h3>
-                <h4>Make sure all entered data is correct.</h4>
-                <Button onClick={handleTransfer}>Transfer</Button>
+                <h3>{t("confirmButton")}</h3>
+                <h4>{t("correctData")}</h4>
+                <Button onClick={handleTransfer}>{t("transfer")}</Button>
                 <Button variant="outline" onClick={() => setProceed(false)}>
                   Cancel
                 </Button>
@@ -625,12 +649,12 @@ const Accounts = () => {
             <Dialog open={payOpen} onOpenChange={setPayOpen}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Make Payment</DialogTitle>
+                  <DialogTitle>{t("makePayment")}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium dark:text-white mb-1">
-                      Amount
+                      {t("amount")}
                     </label>
                     <Input
                       type="number"
@@ -641,7 +665,7 @@ const Accounts = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium dark:text-white mb-1">
-                      Select Way Of Payment ("IBAN"/"Routing")
+                      {t("wayOfPayment")}
                     </label>
                     <Select
                       onValueChange={(value) => setInputType(value)}
@@ -651,7 +675,9 @@ const Accounts = () => {
                         <SelectValue placeholder="Select input type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="routing">Routing Number</SelectItem>
+                        <SelectItem value="routing">
+                          {t("routingNumber")}
+                        </SelectItem>
                         <SelectItem value="iban">IBAN</SelectItem>
                       </SelectContent>
                     </Select>
@@ -663,8 +689,10 @@ const Accounts = () => {
                       </label>
                       <Input
                         type="text"
-                        placeholder={`Enter ${
-                          inputType === "routing" ? "routing number" : "IBAN"
+                        placeholder={`${
+                          inputType === "routing"
+                            ? t("enterRouting")
+                            : t("enterIban")
                         }`}
                         value={
                           inputType === "routing" ? routingNumber : recieverIban
@@ -682,18 +710,18 @@ const Accounts = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium dark:text-white mb-1">
-                      Recipient Name
+                      {t("recipientName")}
                     </label>
                     <Input
                       type="text"
-                      placeholder="Enter recipient's name"
+                      placeholder={t("enterRecipient")}
                       value={payeeName}
                       onChange={(e) => setPayeeName(e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="mr-3 text-sm font-medium dark:text-white">
-                      Payment system:
+                      {t("paymentSystem")}
                     </label>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -722,7 +750,7 @@ const Accounts = () => {
                     </DropdownMenu>
                   </div>
                   <div>
-                    <label>Reason / Message</label>
+                    <label>{t("reason")}</label>
                     <Input
                       type="text"
                       placeholder="Enter message / customer number(id)"
@@ -733,7 +761,7 @@ const Accounts = () => {
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setPayOpen(false)}>
-                    Cancel
+                    {t("cancel")}
                   </Button>
                   <Button onClick={() => setPayProceed(true)}>Pay</Button>
                 </DialogFooter>
@@ -743,22 +771,19 @@ const Accounts = () => {
             <Dialog open={payProceed} onOpenChange={setPayProceed}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Make Payment 2</DialogTitle>
+                  <DialogTitle>{t("areYouSure")}</DialogTitle>
                 </DialogHeader>
-                <h3>
-                  Clicking Confirm will finalize the payment. Are you sure you
-                  want to continue?
-                </h3>
-                <h4>Make sure all entered data is correct!</h4>
-                <Button onClick={handlePayment}>Confirm</Button>
+                <h3>{t("confirmButton")}</h3>
+                <h4>{t("correctData")}</h4>
+                <Button onClick={handlePayment}>{t("confirm")}</Button>
                 <Button variant="outline" onClick={() => setPayProceed(false)}>
-                  Cancel
+                  {t("cancel")}
                 </Button>
               </DialogContent>
             </Dialog>
 
             <h2 className="text-lg font-medium mb-4 dark:text-white mt-[44px]">
-              Spending Breakdown
+              {t("spendingBreakdown")}
             </h2>
             {loading ? (
               <div className="h-[300px] border rounded-lg dark:border-stone-700 animate-pulse bg-stone-100 dark:bg-stone-800"></div>

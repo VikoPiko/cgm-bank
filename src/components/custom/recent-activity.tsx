@@ -6,6 +6,7 @@ import { LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "./currency-context";
 
 export const RecentActivity = ({
   transactions,
@@ -14,6 +15,8 @@ export const RecentActivity = ({
 }) => {
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
+
+  const { convert, currencySymbol } = useCurrency();
 
   const { t } = useTranslation();
   useEffect(() => {
@@ -112,7 +115,8 @@ export const RecentActivity = ({
                   transaction.transactionDirection === "TO"
                     ? "+"
                     : "-"}
-                  {transaction.amount.toFixed(2)}
+                  {convert(Number(transaction.amount.toFixed(2))).toFixed(2)}{" "}
+                  {currencySymbol}
                 </p>
               </div>
             );

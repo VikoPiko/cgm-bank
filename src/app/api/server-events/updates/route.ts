@@ -44,15 +44,24 @@ export async function GET(req: NextRequest) {
                 amount: true,
               },
             });
+
+            const accounts = await prisma.accounts.findMany({
+              where: { userId },
+              orderBy: { updatedAt: "desc" },
+            });
+
+            const plaidBanks = await prisma.banks.findMany({
+              where: { userId },
+              orderBy: { id: "desc" },
+            });
+
             const latestData = {
               notifications,
               mobileNotifications,
               transactions,
               spendingBreakdown,
-              accounts: await prisma.accounts.findMany({
-                where: { userId },
-                orderBy: { updatedAt: "desc" },
-              }),
+              accounts,
+              plaidBanks,
             };
 
             controller.enqueue(

@@ -21,27 +21,30 @@ const loginSchema = z.object({
     .nonempty({ message: "Password is required" }),
 });
 
-export async function login(prevState: any, formData: FormData) {
-  // Validate the form data against the schema
+type LoginResult =
+  | { errors: { email?: string; password?: string; general?: string } }
+  | { redirect: string };
+
+export async function login(
+  prevState: any,
+  formData: FormData
+): Promise<LoginResult> {
   const result = loginSchema.safeParse(Object.fromEntries(formData));
 
-  // If validation fails, return errors
   if (!result.success) {
     return {
-      errors: result.error.flatten().fieldErrors,
+      errors: result.error.flatten().fieldErrors as {
+        email?: string;
+        password?: string;
+      },
     };
   }
 
-  // Extract the validated data
   const { email, password } = result.data;
 
   try {
-    // Attempt to find the user in the database
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    // If no user or invalid password, return error
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return {
         errors: {
@@ -50,12 +53,9 @@ export async function login(prevState: any, formData: FormData) {
       };
     }
 
-    // Create session if credentials are correct
     const session = await createSession(user.userId, user.role);
     if (session) {
-      return NextResponse.redirect(
-        new URL("/dashboard", process.env.NEXT_PUBLIC_BASE_URL)
-      );
+      return { redirect: "/dashboard" };
     }
   } catch (error) {
     console.error("Error during login:", error);
@@ -65,6 +65,12 @@ export async function login(prevState: any, formData: FormData) {
       },
     };
   }
+
+  return {
+    errors: {
+      general: "Something went wrong.",
+    },
+  };
 }
 
 export async function logout() {

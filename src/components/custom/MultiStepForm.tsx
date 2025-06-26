@@ -315,7 +315,7 @@ export default function MultiStepForm() {
                 name="ssn"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>SSN</FormLabel>
+                    <FormLabel>SSN / EGN / PID</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

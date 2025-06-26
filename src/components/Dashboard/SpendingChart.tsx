@@ -1,4 +1,7 @@
+"use client";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useCurrency } from "../custom/currency-context";
 
 type CategoryData = {
   category: string;
@@ -10,6 +13,8 @@ type CategoryData = {
 export const SpendingBreakdown = () => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<CategoryData[]>([]);
+  const { convert, currencySymbol } = useCurrency();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const eventSource = new EventSource("/api/server-events/updates");
@@ -45,9 +50,14 @@ export const SpendingBreakdown = () => {
             {categories.map((item, i) => (
               <div key={i}>
                 <div className="flex justify-between text-sm mb-1">
-                  <span className="dark:text-white">{item.category}</span>
+                  <span className="dark:text-white">
+                    {t(`${item.category.toLowerCase()}`)}
+                  </span>
                   <span className="font-medium dark:text-white">
-                    ${item._sum.amount.toFixed(2)}
+                    {Number(
+                      convert(Number(item._sum.amount.toFixed(2))).toFixed(2)
+                    )}
+                    {currencySymbol}
                   </span>
                 </div>
                 <div className="w-full bg-stone-200 dark:bg-stone-700 rounded-full h-2">

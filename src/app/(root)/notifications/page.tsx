@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import RelativeTime from "@/components/custom/RelativeTime";
 import { icons } from "lucide-react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const LucideIcons = Icons as unknown as Record<string, LucideIcon>;
 
@@ -50,6 +51,7 @@ export default function NotificationsPage() {
   // }, [user]);
   const { user, getNotifications } = useUser();
   const [notifs, setNotifs] = useState<Notifications[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
@@ -146,10 +148,10 @@ export default function NotificationsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bell className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold">Notifications</h1>
+                <h1 className="text-2xl font-bold">{t("notifications")}</h1>
                 {unreadCount > 0 && (
                   <Badge variant="secondary" className="ml-2">
-                    {unreadCount} unread
+                    {unreadCount} {t("unread")}
                   </Badge>
                 )}
               </div>
@@ -161,27 +163,27 @@ export default function NotificationsPage() {
                     onCheckedChange={setShowUnreadOnly}
                   />
                   <label htmlFor="unread-only" className="text-sm font-medium">
-                    Unread only
+                    {t("unreadOnly")}
                   </label>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Filter className="h-4 w-4" />
-                      <span className="hidden sm:inline">Actions</span>
+                      <span className="hidden sm:inline">{t("actions")}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={markAllAsRead} className="gap-2">
                       <CheckCheck className="h-4 w-4" />
-                      <span>Mark all as read</span>
+                      <span>{t("markAllAsRead")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={clearAllNotifications}
                       className="gap-2 text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
-                      <span>Clear all notifications</span>
+                      <span>{t("clearAllNotifications")}</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -196,11 +198,11 @@ export default function NotificationsPage() {
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="transaction">Transactions</TabsTrigger>
-              <TabsTrigger value="security">Security</TabsTrigger>
-              <TabsTrigger value="account">Account</TabsTrigger>
-              <TabsTrigger value="promotion">Promotions</TabsTrigger>
+              <TabsTrigger value="all">{t("all")}</TabsTrigger>
+              <TabsTrigger value="transaction">{t("transactions")}</TabsTrigger>
+              <TabsTrigger value="security">{t("security")}</TabsTrigger>
+              <TabsTrigger value="account">{t("account")}</TabsTrigger>
+              <TabsTrigger value="promotion">{t("promotions")}</TabsTrigger>
             </TabsList>
             <TabsContent value={activeTab} className="mt-6">
               <Card>
@@ -208,11 +210,13 @@ export default function NotificationsPage() {
                   {filteredNotifications.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
                       <Bell className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium">No notifications</h3>
+                      <h3 className="text-lg font-medium">
+                        {t("noNotifications")}
+                      </h3>
                       <p className="text-sm text-muted-foreground mt-1">
                         {showUnreadOnly
-                          ? "You have no unread notifications."
-                          : "You don't have any notifications yet."}
+                          ? t("noUnreadNotifications")
+                          : t("anyNotifications")}
                       </p>
                     </div>
                   ) : (
@@ -283,7 +287,9 @@ export default function NotificationsPage() {
                                   }
                                 >
                                   <Icons.Check className="h-4 w-4" />
-                                  <span className="sr-only">Mark as read</span>
+                                  <span className="sr-only">
+                                    {t("markAsRead")}
+                                  </span>
                                 </Button>
                               )}
                             </div>
@@ -299,17 +305,16 @@ export default function NotificationsPage() {
 
           <div className="mt-8">
             <h2 className="text-lg font-medium mb-4">
-              Notification Preferences
+              {t("notificationPreferences")}
             </h2>
             <Card>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Transaction Alerts</h3>
+                      <h3 className="font-medium">{t("transactionAlerts")}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Get notified about deposits, withdrawals, and large
-                        transactions
+                        {t("getNotifiedAbout")}
                       </p>
                     </div>
                     <Switch defaultChecked id="transaction-alerts" />
@@ -317,10 +322,9 @@ export default function NotificationsPage() {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Security Alerts</h3>
+                      <h3 className="font-medium">{t("securityAlerts")}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Get notified about login attempts, password changes, and
-                        suspicious activity
+                        {t("getNotifiedSecurity")}
                       </p>
                     </div>
                     <Switch defaultChecked id="security-alerts" />
@@ -328,10 +332,9 @@ export default function NotificationsPage() {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Account Updates</h3>
+                      <h3 className="font-medium">{t("accountUpdates")}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Get notified about statements, balance thresholds, and
-                        account changes
+                        {t("getNotifiedAccount")}
                       </p>
                     </div>
                     <Switch defaultChecked id="account-updates" />
@@ -339,10 +342,11 @@ export default function NotificationsPage() {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Promotions & Offers</h3>
+                      <h3 className="font-medium">
+                        {t("promotionsAndOffers")}
+                      </h3>
                       <p className="text-sm text-muted-foreground">
-                        Get notified about new products, rewards, and special
-                        offers
+                        {t("getNotifiedOffers")}
                       </p>
                     </div>
                     <Switch id="promotions" />
@@ -352,13 +356,13 @@ export default function NotificationsPage() {
               <CardFooter className="bg-muted/30 px-6 py-4">
                 <div className="flex items-center justify-between w-full">
                   <div className="text-sm text-muted-foreground">
-                    You can also manage notification delivery methods in your{" "}
+                    {t("canAlsoManage")}
                     <Link href="#" className="text-primary hover:underline">
-                      account settings
+                      {t("accountSettings")}
                     </Link>
                     .
                   </div>
-                  <Button size="sm">Save Preferences</Button>
+                  <Button size="sm">{t("savePreferences")}</Button>
                 </div>
               </CardFooter>
             </Card>

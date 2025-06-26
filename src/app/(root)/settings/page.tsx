@@ -244,9 +244,9 @@ export default function Settings() {
       <main className="flex-1">
         <div className="container mx-auto max-w-7xl px-4 py-8 md:px-6">
           <div className="flex flex-col gap-2 mb-8">
-            <h1 className="text-3xl font-bold">Settings</h1>
+            <h1 className="text-3xl font-bold">{t("security")}</h1>
             <p className="text-muted-foreground">
-              Manage your account settings and preferences
+              {t("manageYourAccountSettings")}
             </p>
           </div>
 
@@ -258,27 +258,27 @@ export default function Settings() {
                   {[
                     {
                       id: "Profile",
-                      label: "Profile",
+                      label: t("profile"),
                       icon: <User className="h-4 w-4" />,
                     },
                     {
                       id: "Security",
-                      label: "Security",
+                      label: t("security"),
                       icon: <Lock className="h-4 w-4" />,
                     },
                     {
                       id: "Notifications",
-                      label: "Notifications",
+                      label: t("notifications"),
                       icon: <Bell className="h-4 w-4" />,
                     },
                     {
                       id: "Preferences",
-                      label: "Preferences",
+                      label: t("preferences"),
                       icon: <Globe className="h-4 w-4" />,
                     },
                     {
                       id: "Devices",
-                      label: "Devices & Cards",
+                      label: t("devicesAndCards"),
                       icon: <Smartphone className="h-4 w-4" />,
                     },
                   ].map((item) => (
@@ -302,7 +302,7 @@ export default function Settings() {
                     onClick={logout}
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>Sign Out</span>
+                    <span>{t("signOut")}</span>
                   </button>
                 </nav>
               </CardContent>
@@ -314,9 +314,9 @@ export default function Settings() {
               {activeTab === "Profile" && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Profile Information</CardTitle>
+                    <CardTitle>{t("profileInformation")}</CardTitle>
                     <CardDescription>
-                      Update your personal information and profile settings
+                      {t("updatePersonalInformation")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -339,7 +339,7 @@ export default function Settings() {
                       <div className="flex-1 space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
+                            <Label htmlFor="name">{t("fullName")}</Label>
                             <Input
                               id="name"
                               defaultValue={formData?.firstName}
@@ -348,7 +348,7 @@ export default function Settings() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
+                            <Label htmlFor="email">{t("email")}</Label>
                             <Input
                               id="email"
                               type="email"
@@ -358,7 +358,7 @@ export default function Settings() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
+                            <Label htmlFor="phone">{t("phoneNumber")}</Label>
                             <Input
                               id="phone"
                               defaultValue={formData?.phoneNumber}
@@ -367,7 +367,7 @@ export default function Settings() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="dob">Date of Birth</Label>
+                            <Label htmlFor="dob">{t("dateOfBirth")}</Label>
                             <Input
                               id="dob"
                               type="date"
@@ -378,7 +378,7 @@ export default function Settings() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="address">Address</Label>
+                          <Label htmlFor="address">{t("address")}</Label>
                           <Textarea
                             id="address"
                             defaultValue={formData?.address1}
@@ -400,7 +400,7 @@ export default function Settings() {
                       ) : (
                         <>
                           <Save className="mr-2 h-4 w-4" />
-                          Save Changes
+                          {t("saveChanges")}
                         </>
                       )}
                     </Button>
@@ -412,18 +412,16 @@ export default function Settings() {
               {activeTab === "Security" && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Security Settings</CardTitle>
-                    <CardDescription>
-                      Manage your password and security preferences
-                    </CardDescription>
+                    <CardTitle>{t("securitySettings")}</CardTitle>
+                    <CardDescription>{t("manageSecurity")}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Password</h3>
+                      <h3 className="text-lg font-medium">{t("password")}</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="current-password">
-                            Current Password
+                            {t("currentPassword")}
                           </Label>
                           <div className="relative">
                             <Input
@@ -448,7 +446,9 @@ export default function Settings() {
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="new-password">New Password</Label>
+                          <Label htmlFor="new-password">
+                            {t("newPassword")}
+                          </Label>
                           <Input
                             id="new-password"
                             type={showPassword ? "text" : "password"}
@@ -457,7 +457,7 @@ export default function Settings() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="confirm-password">
-                            Confirm New Password
+                            {t("confirmNewPassword")}
                           </Label>
                           <Input
                             id="confirm-password"
@@ -471,16 +471,12 @@ export default function Settings() {
                     <Separator />
 
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">
-                        Two-Factor Authentication
-                      </h3>
+                      <h3 className="text-lg font-medium">{t("twoFactor")}</h3>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <div className="font-medium">
-                            Two-Factor Authentication
-                          </div>
+                          <div className="font-medium">{t("twoFactor")}</div>
                           <div className="text-sm text-muted-foreground">
-                            Add an extra layer of security to your account
+                            {t("addExtraLayer")}
                           </div>
                         </div>
                         <Switch
@@ -493,18 +489,17 @@ export default function Settings() {
                       {object?.twoFactorEnabled && (
                         <div className="rounded-md bg-muted p-4">
                           <div className="font-medium">
-                            Two-factor authentication is enabled
+                            {t("twoFactorEnabled")}
                           </div>
                           <div className="text-sm text-muted-foreground mt-1">
-                            You'll be asked for a verification code when you
-                            sign in on a new device.
+                            {t("verificationCode")}
                           </div>
                           <div className="mt-3 flex gap-2">
                             <Button variant="outline" size="sm">
-                              Setup Authenticator App
+                              {t("setupAuthApp")}
                             </Button>
                             <Button variant="outline" size="sm">
-                              View Recovery Codes
+                              {t("recoveryCodes")}
                             </Button>
                           </div>
                         </div>
@@ -515,16 +510,13 @@ export default function Settings() {
 
                     <div className="space-y-4">
                       <h3 className="text-lg font-medium">
-                        Login Notifications
+                        {t("loginNotifications")}
                       </h3>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <div className="font-medium">
-                            Email me when someone logs into my account
-                          </div>
+                          <div className="font-medium">{t("emailMe")}</div>
                           <div className="text-sm text-muted-foreground">
-                            You'll receive an email notification when your
-                            account is accessed from a new device or location
+                            {t("recieveEmailNotif")}
                           </div>
                         </div>
                         <Switch
@@ -558,30 +550,29 @@ export default function Settings() {
               {activeTab === "Notifications" && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Notification Preferences</CardTitle>
+                    <CardTitle>{t("notificationPreferences")}</CardTitle>
                     <CardDescription>
-                      Manage how and when you receive notifications
+                      {t("manageNotifications")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <Tabs defaultValue="email">
                       <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="email">Email</TabsTrigger>
+                        <TabsTrigger value="email">{t("email")}</TabsTrigger>
                         <TabsTrigger value="push">
-                          Push Notifications
+                          {t("pushNotifications")}
                         </TabsTrigger>
-                        <TabsTrigger value="sms">SMS</TabsTrigger>
+                        <TabsTrigger value="sms">{t("sms")}</TabsTrigger>
                       </TabsList>
                       <TabsContent value="email" className="space-y-4 pt-4">
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
                             <div>
                               <h3 className="font-medium">
-                                Transaction Alerts
+                                {t("transactionAlerts")}
                               </h3>
                               <p className="text-sm text-muted-foreground">
-                                Receive emails about your transactions,
-                                deposits, and withdrawals
+                                {t("transactionAlerts")}
                               </p>
                             </div>
                             <Switch
@@ -594,10 +585,11 @@ export default function Settings() {
                           <Separator />
                           <div className="flex items-center justify-between">
                             <div>
-                              <h3 className="font-medium">Security Alerts</h3>
+                              <h3 className="font-medium">
+                                {t("securityAlerts")}
+                              </h3>
                               <p className="text-sm text-muted-foreground">
-                                Receive emails about security events like
-                                password changes and login attempts
+                                {t("securityAlertsDescription")}
                               </p>
                             </div>
                             <Switch
@@ -610,10 +602,11 @@ export default function Settings() {
                           <Separator />
                           <div className="flex items-center justify-between">
                             <div>
-                              <h3 className="font-medium">Balance Alerts</h3>
+                              <h3 className="font-medium">
+                                {t("balanceAlerts")}
+                              </h3>
                               <p className="text-sm text-muted-foreground">
-                                Receive emails when your account balance falls
-                                below a threshold
+                                {t("balanceAlertsDescription")}
                               </p>
                             </div>
                             <Switch
@@ -626,10 +619,11 @@ export default function Settings() {
                           <Separator />
                           <div className="flex items-center justify-between">
                             <div>
-                              <h3 className="font-medium">Marketing Emails</h3>
+                              <h3 className="font-medium">
+                                {t("marketingEmails")}
+                              </h3>
                               <p className="text-sm text-muted-foreground">
-                                Receive emails about new features, promotions,
-                                and offers
+                                {t("marketingEmailsDescription")}
                               </p>
                             </div>
                             <Switch

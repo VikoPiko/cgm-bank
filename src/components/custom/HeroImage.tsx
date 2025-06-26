@@ -9,7 +9,10 @@ import {
 
 const HeroImage = () => {
   return (
-    <div className="grid w-full place-content-end translate-y-20">
+    <div
+      className="grid w-full place-content-end translate-y-20 select-none"
+      draggable={false}
+    >
       <TiltCard />
     </div>
   );
@@ -61,6 +64,7 @@ const TiltCard = () => {
         transform,
       }}
       className="relative h-96 w-72 rounded-xl"
+      draggable={false}
     >
       {/* Background Image */}
       <motion.img
@@ -71,6 +75,7 @@ const TiltCard = () => {
           transform:
             "translateZ(-50px) scale(1.25) translateX(-65px) translateY(10px)",
         }}
+        draggable={false}
       />
 
       {/* Foreground Image */}
@@ -82,6 +87,7 @@ const TiltCard = () => {
           transform:
             "translateZ(50px) scale(1.0) translateX(-10px) translateY(10px)",
         }}
+        draggable={false}
       />
     </motion.div>
   );

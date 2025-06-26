@@ -21,7 +21,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { VelocityText } from "@/components/custom/velocity-text";
 
 export default function PersonalPage() {
   return (
@@ -627,7 +626,7 @@ export default function PersonalPage() {
               href="#"
               className="text-sm font-medium hover:underline underline-offset-4"
             >
-              © 2025 CGM bank. All rights reserved.
+              © 2025 CGM bank.
             </Link>
           </div>
         </div>
