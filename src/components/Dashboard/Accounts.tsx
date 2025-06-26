@@ -150,11 +150,11 @@ const Accounts = () => {
         if (acc && acc.length > 0) {
           setAccount(acc);
 
-          const rate = await fetchExchangeRates(selectedCurrency);
+          // const rate = await fetchExchangeRates(selectedCurrency);
           const baseBalance = acc[0].availableBalance ?? 0;
-          const converted = convert(baseBalance);
+          // const converted = convert(baseBalance);
 
-          setConvertedBalance(converted);
+          // setConvertedBalance(converted);
         } else {
           setAccount([]);
           setConvertedBalance(0);
@@ -449,7 +449,8 @@ const Accounts = () => {
                       </p> */}
                       <div>
                         <AnimatedCounter
-                          amount={convert(convertedBalance)}
+                          // amount={convert(convertedBalance)}
+                          amount={convert(account[0]?.availableBalance ?? 0)}
                           currencySymbol={currencySymbol}
                         />
                       </div>
@@ -580,7 +581,7 @@ const Accounts = () => {
                       />
                     </div>
                     <p className="text-sm">
-                      Sample IBAN number "Viktor" : BG48CGMBANK017492459758
+                      Sample IBAN number "Pavel" : BG47CGMBANK017421346069
                     </p>
                   </div>
                   <div>
@@ -705,7 +706,7 @@ const Accounts = () => {
                       />
                     </div>
                     <p className="text-sm">
-                      Sample IBAN number "Viktor" : BG48CGMBANK017492459758
+                      Sample IBAN number "Pavel" : BG47CGMBANK017421346069
                     </p>
                   </div>
                   <div>
