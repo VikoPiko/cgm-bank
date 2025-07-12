@@ -1,7 +1,10 @@
 import dwolla from "dwolla-v2";
 
-export const dwollaClient = new dwolla.Client({
+const dwollaClient = new dwolla.Client({
   key: process.env.DWOLLA_KEY!,
   secret: process.env.DWOLLA_SECRET!,
-  environment: "sandbox",
+  environment:
+    process.env.DWOLLA_ENV === "production" ? "production" : "sandbox",
 });
+
+export default dwollaClient;

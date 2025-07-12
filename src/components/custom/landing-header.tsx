@@ -35,6 +35,9 @@ const MainHeader = () => {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 border-b bg-background/20 backdrop-blur-sm">
+      <span className="flex -full h-[20px] bg-red-500 text-white font-semibold justify-center items-center">
+        BACKEND CURRENTLY SHUT DOWN!
+      </span>
       <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between">
         {/* Left Section: Logo */}
         <Link href={"/"}>

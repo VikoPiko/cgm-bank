@@ -8,29 +8,31 @@ datasource db {
 }
 
 model User {
-  userId         String           @id @default(uuid())
-  firstName      String           @default("")
-  middleName     String           @default("")
-  lastName       String           @default("")
-  email          String           @unique @default("")
-  address1       String           @default("")
-  phoneNumber    String           @default("")
-  country        String           @default("")
-  city           String           @default("")
-  avatar         String           @default("/profile.jpg")
-  password       String           @default("")
-  ssn            String           @default("")
-  dateOfBirth    String           @default("")
-  postalCode     String           @default("")
-  initialDeposit String           @default("25.00")
-  role           Role             @default(CLIENT)
-  banks          Banks[]
-  accounts       Accounts[]
-  loans          Loans[]
-  notifications  Notifications[]
-  transactions   Transactions[]
-  preferences    UserPreferences? // Optional relation with UserPreferences
-  createdAt      DateTime         @default(now())
+  userId            String           @id @default(uuid())
+  firstName         String           @default("")
+  middleName        String           @default("")
+  lastName          String           @default("")
+  email             String           @unique @default("")
+  address1          String           @default("")
+  phoneNumber       String           @default("")
+  country           String           @default("")
+  city              String           @default("")
+  avatar            String           @default("/profile.jpg")
+  password          String           @default("")
+  ssn               String           @default("")
+  dateOfBirth       String           @default("")
+  postalCode        String           @default("")
+  initialDeposit    String           @default("25.00")
+  role              Role             @default(CLIENT)
+  banks             Banks[]
+  accounts          Accounts[]
+  loans             Loans[]
+  notifications     Notifications[]
+  transactions      Transactions[]
+  preferences       UserPreferences? // Optional relation with UserPreferences
+  createdAt         DateTime         @default(now())
+  dwollaCustomerUrl String?
+  dwollaCustomerId  String?
 }
 
 model UserPreferences {

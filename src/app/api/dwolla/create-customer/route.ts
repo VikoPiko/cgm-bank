@@ -1,4 +1,4 @@
-import { dwollaClient } from "@/lib/dwolla";
+import dwollaClient from "@/lib/dwolla";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
